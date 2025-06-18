@@ -1,11 +1,9 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 
-import {Tooltip, Grow} from '@mui/material';
-import {KeyboardArrowDown, KeyboardArrowUp} from "@mui/icons-material";
+import { Tooltip, Grow } from "@mui/material";
+import {BarChartOutlined, KeyboardArrowDown, KeyboardArrowUp, MoreHoriz } from "@mui/icons-material";
 
-import {watchlist} from "../data/data";
-
-
+import { watchlist } from "../data/data";
 
 const WatchList = () => {
   return (
@@ -22,10 +20,8 @@ const WatchList = () => {
       </div>
 
       <ul className="list">
-        {watchlist.map((stock,index)=>{
-          return(
-            <WatchListItem stock={stock} key={index}/>
-          )
+        {watchlist.map((stock, index) => {
+          return <WatchListItem stock={stock} key={index} />;
         })}
       </ul>
     </div>
@@ -34,27 +30,81 @@ const WatchList = () => {
 
 export default WatchList;
 
-const WatchListItem = ({stock}) =>{
+const WatchListItem = ({ stock }) => {
   const [showWatchListActions, setShowWatchListActions] = useState(false);
 
-  const handleMouseEnter = (e)=>{
+  const handleMouseEnter = (e) => {
     setShowWatchListActions(true);
-  }
+  };
 
-  const handleMouseLeave = (e)=>{
+  const handleMouseLeave = (e) => {
     setShowWatchListActions(false);
-  }
+  };
 
-  return(
+  return (
     <li onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="item">
-        <p className={stock.isDown ? "down":"up"}>{stock.name}</p>
+        <p className={stock.isDown ? "down" : "up"}>{stock.name}</p>
         <div className="itemInfo">
           <span className="percent">{stock.percent}</span>
-          {stock.isDown ? (<KeyboardArrowDown className="down"/>) : (<KeyboardArrowUp className="up"/>) }
+          {stock.isDown ? (
+            <KeyboardArrowDown className="down" />
+          ) : (
+            <KeyboardArrowUp className="up" />
+          )}
           <span className="price">{stock.price}</span>
         </div>
       </div>
+      {showWatchListActions && <WatchListActions uid={stock.name}/>}
     </li>
-  )
-}
+  );
+};
+
+const WatchListActions = ({ uid }) => {
+  return (
+    <span className="actions">
+      <span>
+        <Tooltip
+          title="Buy (B)"
+          placement="top"
+          arrow
+          TransitionComponent={Grow}
+        >
+          <button className="buy">Buy</button>
+        </Tooltip>
+
+        <Tooltip
+          title="Sell (S)"
+          placement="top"
+          arrow
+          TransitionComponent={Grow}
+        >
+          <button className="sell">Sell</button>
+        </Tooltip>
+
+        <Tooltip
+          title="Analytics (A)"
+          placement="top"
+          arrow
+          TransitionComponent={Grow}
+        >
+           <button className="action">
+            <BarChartOutlined className="icon"/>
+           </button>
+         
+        </Tooltip>
+
+        <Tooltip
+          title="More (M)"
+          placement="top"
+          arrow
+          TransitionComponent={Grow}
+        >
+          <button className="action">
+            <MoreHoriz/>
+          </button>
+        </Tooltip>
+      </span>
+    </span>
+  );
+};
