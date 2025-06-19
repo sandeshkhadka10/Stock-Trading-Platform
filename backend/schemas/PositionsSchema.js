@@ -12,4 +12,4 @@ const PositionsSchema = new Schema({
 
 });
 
-exports.module = {PositionsSchema};
+module.exports = {PositionsSchema};
