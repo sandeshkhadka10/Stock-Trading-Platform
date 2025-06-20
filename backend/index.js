@@ -11,11 +11,17 @@ const url = process.env.MONGO_URL;
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
 app.listen(3002, () => {
   console.log("App started!");
   mongoose.connect(url);
   console.log("Database connected");
 });
+
+app.use(cors());
+app.use(bodyParser.json());
 
 // adding the dummy data for holdings in the database
 // app.get("/addHoldings",(req, res) => {
@@ -183,3 +189,13 @@ app.listen(3002, () => {
 //   });
 //   res.send("Done");
 // });
+
+app.get("/allHoldings",async(req,res)=>{
+  let allHoldings = await HoldingsModel.find({});
+  res.json(allHoldings);
+});
+
+app.get("/allPositions",async(req,res)=>{
+  let allPositions = await PositionsModel.find({});
+  res.json(allPositions);
+});
