@@ -6,14 +6,9 @@ import GeneralContext from "./GeneralContext";
 import "./BuyActionWindow.css";
 
 const BuyActionWindow = ({ uid }) => {
-  
-  const handleBuyClick = () => {
+  const handleCancelClick = () =>{
     GeneralContext.closeBuyWindow();
-  };
-
-  const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
-  };
+  }
 
   return (
     <div className="container" id="buy-window" draggable="true">
@@ -42,7 +37,7 @@ const BuyActionWindow = ({ uid }) => {
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
+          <Link className="btn btn-blue">
             Buy
           </Link>
           <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
