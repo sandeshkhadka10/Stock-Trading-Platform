@@ -16,7 +16,7 @@ const SellActionWindow = ({ uid }) => {
       name: uid,
       qty: stockQuantity,
       price: stockPrice,
-      mode: "Sell",
+      model: "Sell",
     });
     generalContext.closeSellWindow();
   };

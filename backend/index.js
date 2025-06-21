@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3002;
 const url = process.env.MONGO_URL;
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
-const {OrdersModel} = require("./model/OrdersModel");
+const { OrdersModel } = require("./model/OrdersModel");
 
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -191,23 +191,89 @@ app.use(bodyParser.json());
 //   res.send("Done");
 // });
 
-app.get("/allHoldings",async(req,res)=>{
+// getting all the holdings values from the database
+app.get("/allHoldings", async (req, res) => {
   let allHoldings = await HoldingsModel.find({});
   res.json(allHoldings);
 });
 
-app.get("/allPositions",async(req,res)=>{
+// getting all the positions values from the database
+app.get("/allPositions", async (req, res) => {
   let allPositions = await PositionsModel.find({});
   res.json(allPositions);
 });
 
-app.post("/newOrder",async(req,res)=>{
-  let newOrder = new OrdersModel({
-    name:req.body.name,
-    qty:req.body.qty,
-    price:req.body.price,
-    model:req.body.model
-  });
-  newOrder.save();
-  res.send("Order Saved");
-})
+// it is for buying and selling the stock
+app.post("/newOrder", async (req, res) => {
+  // let newOrder = new OrdersModel({
+  //   name:req.body.name,
+  //   qty:req.body.qty,
+  //   price:req.body.price,
+  //   model:req.body.model
+  // });
+  // newOrder.save();
+  // res.send("Order Saved");
+  const { name, qty, price, model } = req.body;
+
+  if (model == "Buy") {
+    // create and save the order directly
+    await OrdersModel.create({ name, qty, price, model });
+
+    // check whether the stock that we bought exist or not
+    let existing = HoldingsModel.find({ name });
+    if (existing) {
+      const totalQty = existing.qty + qty;
+      const totalCost = existing.avg * existing.qty + price * qty;
+      const newAvg = totalCost / totalQty;
+
+      // LTP -> Latest price
+      const ltp = price;
+
+      const currValue = ltp * totalQty;
+      const isLoss = currValue < totalCost;
+      const netChange = ((currValue - totalCost) / totalCost) * 100;
+      const sign = netChange >= 0 ? "+" : "-";
+      const net = `${sign}${netChange.toFixed(2)}%`;
+
+      // Update Fields
+      existing.qty = totalQty;
+      existing.avg = newAvg;
+      existing.price = ltp;
+      existing.net = net;
+      existing.isLoss = isLoss;
+
+      await existing.save();
+    } else {
+      // if it is not in the holding then adding there for the 1st time
+      const avg = price;
+      const ltp = price;
+      const currValue = ltp * avg;
+      const totalInvestment = avg * qty;
+      const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+      const sign = netChange >= 0 ? "+" : "-";
+      const net = `${sign}${netChange.toFixed(2)}%`;
+      const isLoss = currValue < totalInvestment;
+
+      HoldingsModel.create({
+        name,
+        qty,
+        avg,
+        price: ltp,
+        net,
+        day: "+0.00%", // later updating it with real time price using live api
+        isLoss,
+      });
+       return res
+      .status(201)
+      .json({ message: "New holding created" });
+    }
+    return res
+      .status(201)
+      .json({ message: "Order placed and holdings updated" });
+  }
+});
+
+app.get("/allOrders", async (req, res) => {
+  let allOrders = OrdersModel.find({});
+  res.json(allOrders);
+});
