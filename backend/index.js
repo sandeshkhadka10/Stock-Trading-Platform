@@ -214,43 +214,141 @@ app.post("/newOrder", async (req, res) => {
   // newOrder.save();
   // res.send("Order Saved");
   const { name, qty, price, model } = req.body;
+
   if (model == "Buy") {
-  try {
-    // Save the order
-    await OrdersModel.create({ name, qty, price, model });
+    try {
+      // Create and save the order directly
+      await OrdersModel.create({ name, qty, price, model });
 
-    const newQty = Number(qty);
-    const newPrice = Number(price);
+      // Check whether the stock that we bought exists or not
+      let existing = await HoldingsModel.findOne({ name });
 
-    const avg = newPrice;
-    const ltp = newPrice;
-    const currValue = ltp * newQty;
-    const totalInvestment = avg * newQty;
-    const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
-    const sign = netChange >= 0 ? "+" : "-";
-    const net = `${sign}${netChange.toFixed(2)}%`;
-    const isLoss = currValue < totalInvestment;
+      if (existing) {
+        const newQty = Number(qty);
+        const newPrice = Number(price);
 
-    // 💡 Always create a new holding entry regardless of existing ones
-    await HoldingsModel.create({
-      name,
-      qty: newQty,
-      avg,
-      price: ltp,
-      net,
-      day: "+0.00%",
-      isLoss,
-    });
+        const totalQty = existing.qty + newQty;
+        const totalCost = existing.avg * existing.qty + newPrice * newQty;
+        const newAvg = totalCost / totalQty;
 
-    return res.status(201).json({ message: "New holding created" });
-  } catch (error) {
-    console.error("Error processing order:", error);
+        // LTP -> Latest price
+        const ltp = newPrice;
+
+        const currValue = ltp * totalQty;
+        const isLoss = currValue < totalCost;
+        const netChange = ((currValue - totalCost) / totalCost) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+
+        // Update Fields
+        existing.qty = totalQty;
+        existing.avg = newAvg;
+        existing.price = ltp;
+        existing.net = net;
+        existing.isLoss = isLoss;
+
+        await existing.save();
+
+        return res
+          .status(200)
+          .json({ message: "Order placed and holdings updated" });
+      } else {
+        // If it is not in the holding then adding there for the 1st time
+        const newQty = Number(qty);
+        const newPrice = Number(price);
+
+        const avg = newPrice;
+        const ltp = newPrice;
+        const currValue = ltp * newQty; // FIX 3: Use qty instead of avg
+        const totalInvestment = avg * newQty;
+        const netChange =
+          ((currValue - totalInvestment) / totalInvestment) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+        const isLoss = currValue < totalInvestment;
+
+        await HoldingsModel.create({
+          name,
+          qty: newQty,
+          avg,
+          price: ltp,
+          net,
+          day: "+0.00%", // later updating it with real time price using live api
+          isLoss,
+        });
+
+        return res.status(201).json({ message: "New holding created" });
+      }
+    } catch (error) {
+      console.error("Error processing order:", error);
+      return res
+        .status(500)
+        .json({ message: "Error processing order", error: error.message });
+    }
+  } else if (model == "Sell") {
+    try {
+      let existing = await HoldingsModel.findOne({ name });
+      if (!existing) {
+        return res.status(400).json({ message: "You don't own this stock" });
+      }
+      const sellQty = Number(qty);
+      const sellPrice = Number(price);
+
+      // checking if it contains enough stock quantity to sell
+      if (existing.qty < sellQty) {
+        return res.status(400).json({
+          message: `Insufficient quantity. You own ${existing.qty} shares but trying to sell ${sellQty}`,
+        });
+      }
+      // create and save the sell order
+      await OrdersModel.create({
+        name,
+        qty: sellQty,
+        price: sellPrice,
+        model,
+      });
+
+      // calculating the remaining quantity after sell
+      const remainingQty = existing.qty - sellQty;
+      if (remainingQty == 0) {
+        await HoldingsModel.deleteOne({ name });
+        return res
+          .status(200)
+          .json({ message: "All shares sold. Holding removed" });
+      } else {
+        // Update the holding with remaining quantity
+        const ltp = sellPrice;
+        const currValue = ltp * remainingQty;
+        const totalInvestment = existing.avg * remainingQty;
+        const netChange =
+          ((currValue - totalInvestment) / totalInvestment) * 100;
+        const sign = netChange >= 0 ? "+" : "";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+        const isLoss = currValue < totalInvestment;
+
+        // Update the holding
+        existing.qty = remainingQty;
+        existing.price = ltp; // Update current price
+        existing.net = net;
+        existing.isLoss = isLoss;
+
+        await existing.save();
+
+        return res.status(200).json({
+          message: `${sellQty} shares sold successfully. ${remainingQty} shares remaining.`,
+        });
+      }
+    } catch (error) {
+      console.error("Error processing order: ", error);
+      return res
+        .status(500)
+        .json({ message: "Error processing order", error: error, message });
+    }
+  } else {
     return res
-      .status(500)
-      .json({ message: "Error processing order", error: error.message });
+      .status(400)
+      .json({ message: "Invalid order model. Use 'Buy' or 'Sell'" });
   }
-}
-  
 });
 
 app.get("/allOrders", async (req, res) => {
