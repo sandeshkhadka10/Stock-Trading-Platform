@@ -352,6 +352,6 @@ app.post("/newOrder", async (req, res) => {
 });
 
 app.get("/allOrders", async (req, res) => {
-  let allOrders = OrdersModel.find({});
+  let allOrders = await OrdersModel.find({});
   res.json(allOrders);
 });
