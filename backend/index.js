@@ -214,80 +214,43 @@ app.post("/newOrder", async (req, res) => {
   // newOrder.save();
   // res.send("Order Saved");
   const { name, qty, price, model } = req.body;
-
   if (model == "Buy") {
-    try {
-      // Create and save the order directly
-      await OrdersModel.create({ name, qty, price, model });
+  try {
+    // Save the order
+    await OrdersModel.create({ name, qty, price, model });
 
-      // Check whether the stock that we bought exists or not
-      let existing = await HoldingsModel.findOne({ name });
+    const newQty = Number(qty);
+    const newPrice = Number(price);
 
-      if (existing) {
-        const newQty = Number(qty);
-        const newPrice = Number(price);
+    const avg = newPrice;
+    const ltp = newPrice;
+    const currValue = ltp * newQty;
+    const totalInvestment = avg * newQty;
+    const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+    const sign = netChange >= 0 ? "+" : "-";
+    const net = `${sign}${netChange.toFixed(2)}%`;
+    const isLoss = currValue < totalInvestment;
 
-        const totalQty = existing.qty + newQty;
-        const totalCost = existing.avg * existing.qty + newPrice * newQty;
-        const newAvg = totalCost / totalQty;
+    // 💡 Always create a new holding entry regardless of existing ones
+    await HoldingsModel.create({
+      name,
+      qty: newQty,
+      avg,
+      price: ltp,
+      net,
+      day: "+0.00%",
+      isLoss,
+    });
 
-        // LTP -> Latest price
-        const ltp = newPrice;
-
-        const currValue = ltp * totalQty;
-        const isLoss = currValue < totalCost;
-        const netChange = ((currValue - totalCost) / totalCost) * 100;
-        const sign = netChange >= 0 ? "+" : "-";
-        const net = `${sign}${netChange.toFixed(2)}%`;
-
-        // Update Fields
-        existing.qty = totalQty;
-        existing.avg = newAvg;
-        existing.price = ltp;
-        existing.net = net;
-        existing.isLoss = isLoss;
-
-        await existing.save();
-
-        return res
-          .status(200)
-          .json({ message: "Order placed and holdings updated" });
-      } else {
-        // If it is not in the holding then adding there for the 1st time
-        const newQty = Number(qty);
-        const newPrice = Number(price);
-
-        const avg = newPrice;
-        const ltp = newPrice;
-        const currValue = ltp * newQty; // FIX 3: Use qty instead of avg
-        const totalInvestment = avg * newQty;
-        const netChange =
-          ((currValue - totalInvestment) / totalInvestment) * 100;
-        const sign = netChange >= 0 ? "+" : "-";
-        const net = `${sign}${netChange.toFixed(2)}%`;
-        const isLoss = currValue < totalInvestment;
-
-        await HoldingsModel.create({
-          name,
-          qty: newQty,
-          avg,
-          price: ltp,
-          net,
-          day: "+0.00%", // later updating it with real time price using live api
-          isLoss,
-        });
-
-        return res.status(201).json({ message: "New holding created" });
-      }
-    } catch (error) {
-      console.error("Error processing order:", error);
-      return res
-        .status(500)
-        .json({ message: "Error processing order", error: error.message });
-    }
-  } else {
-    return res.status(400).json({ message: "Invalid order model" });
+    return res.status(201).json({ message: "New holding created" });
+  } catch (error) {
+    console.error("Error processing order:", error);
+    return res
+      .status(500)
+      .json({ message: "Error processing order", error: error.message });
   }
+}
+  
 });
 
 app.get("/allOrders", async (req, res) => {
