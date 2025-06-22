@@ -17,6 +17,8 @@ const Orders = () => {
          <div className="order-table">
           <table>
             <tr>
+              <th>Date</th>
+              <th>Type</th>
               <th>Name</th>
               <th>Qty</th>
               <th>Price</th>
@@ -27,21 +29,21 @@ const Orders = () => {
 
               return(
                 <tr key={index}>
-                  <td>{stock.timestamp}</td>
+                  <td>{new Date(stock.timestamp).toLocaleDateString()}</td>
                   <td>{stock.model}</td>
                   <td>{stock.name}</td>
                   <td>{stock.qty}</td>
                   <td>{stock.price}</td>
                   <td>{total}</td>
                 </tr>
-              );
-            })};
+              )
+            })}
           </table>
 
          </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default Orders;
