@@ -10,6 +10,7 @@ import GeneralContext from "./GeneralContext";
 const SellActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
+  const [allHoldings, setAllHoldings] = useState([]);
 
   const handleSellClick = () => {
     axios.post("http://localhost:3002/newOrder", {
@@ -17,7 +18,12 @@ const SellActionWindow = ({ uid }) => {
       qty: stockQuantity,
       price: stockPrice,
       model: "Sell",
-    });
+    })
+    .then(() => {
+        axios.get("http://localhost:3002/allHoldings").then((res) => {
+          setAllHoldings(res.data);
+        });
+      });
     generalContext.closeSellWindow();
   };
 
