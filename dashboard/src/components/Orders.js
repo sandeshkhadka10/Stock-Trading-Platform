@@ -1,48 +1,15 @@
-import React, { useState, useEffect} from "react";
-
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
-import { Link } from "react-router-dom";
+import GeneralContext from "./GeneralContext";
 
 const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
-  const [editOrder, setEditOrder] = useState(null);
-  const [editQty, setEditQty] = useState("");
-  const [editPrice, setEditPrice] = useState("");
-
   useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = () => {
     axios.get("http://localhost:3002/allOrders").then((res) => {
       console.log(res.data);
       setAllOrders(res.data);
     });
-  };
-
-  const handleEditClick = (order) => {
-    setEditOrder(order);
-    setEditQty(order.qty);
-    setEditPrice(order.price);
-  };
-
-  const handleCancelClick = () => {
-    setEditOrder(null);
-  };
-
-  const handleEditSave = async() =>{
-    try{
-       await axios.put(`http://localhost:3002/editOrder/${editOrder._id}`,{
-        qty:Number(editQty),
-        price:Number(editPrice)
-       });
-       setEditOrder(null);
-       fetchOrders();
-    }catch(error){
-      console.log("Failed to update order", error);
-    }
-  }
+  }, []);
 
   return (
     <div className="orders">
@@ -56,7 +23,8 @@ const Orders = () => {
               <th>Name</th>
               <th>Qty</th>
               <th>Price</th>
-              <th>Model</th>
+              <th>Total</th>
+              <th>Actions</th>
             </tr>
             {allOrders.map((stock, index) => {
               const total = stock.price * stock.qty;
@@ -69,55 +37,27 @@ const Orders = () => {
                   <td>{stock.qty}</td>
                   <td>{stock.price}</td>
                   <td>{total}</td>
-                  <td>
-                    <button onClick={() => handleEditClick(stock)} style={{padding:"3px"}}>Edit</button>
-                    <button>Delete</button>
-                  </td>
+                  <td>{<OrderListActions uid={stock.name} />}</td>
                 </tr>
               );
             })}
           </table>
         </div>
-        {editOrder && (
-          <div className="container" id="buy-window" draggable="true">
-            <div className="regular-order">
-              <div className="inputs">
-                <fieldset>
-                  <legend>Qty.</legend>
-                  <input
-                    type="number"
-                    onChange={(e) => setEditQty(e.target.value)}
-                    value={editQty}
-                  />
-                </fieldset>
-                <fieldset>
-                  <legend>Price</legend>
-                  <input
-                    type="number"
-                    step="0.05"
-                    onChange={(e) => setEditPrice(e.target.value)}
-                    value={editPrice}
-                  />
-                </fieldset>
-              </div>
-            </div>
-
-            <div className="buttons">
-              <span>Margin required ₹140.65</span>
-              <div>
-                <Link className="btn btn-blue" onClick={handleEditSave}>Apply</Link>
-                <Link
-                  to=""
-                  className="btn btn-grey"
-                  onClick={handleCancelClick}
-                >
-                  Cancel
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+    </div>
+  );
+};
+
+const OrderListActions = ({ uid }) => {
+  const generalContext = useContext(GeneralContext);
+  const handleEditClick = () => {
+    generalContext.openEditWindow(uid);
+  };
+
+  return (
+    <div>
+       <button onClick={handleEditClick} style={{padding:"3px", margin:"1rem"}}>Edit</button>
+       <button style={{padding:"3px"}}>Cancel</button>
     </div>
   );
 };
