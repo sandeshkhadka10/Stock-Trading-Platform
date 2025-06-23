@@ -355,3 +355,74 @@ app.get("/allOrders", async (req, res) => {
   let allOrders = await OrdersModel.find({});
   res.json(allOrders);
 });
+
+app.put("/editOrder/:id", async (req, res) => {
+  try {
+    let { id } = req.params;
+    const { qty, price } = req.body;
+    const order = await OrdersModel.findByIdAndUpdate(id, { qty, price });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    const oldQty = order.qty;
+    const oldPrice = order.price;
+
+    // Update order
+    order.qty = qty;
+    order.price = price;
+    await order.save();
+
+    // Now update Holdings
+    const holding = await HoldingsModel.findOne({ name: order.name });
+
+    if (!holding) {
+      return res.status(404).json({ message: "Related holding not found" });
+    }
+
+    if (order.model === "Buy") {
+      // Adjust qty and avg
+      const totalQty = holding.qty - oldQty + qty;
+      const totalCost = holding.avg * holding.qty - oldPrice * oldQty + price * qty;
+      const newAvg = totalCost / totalQty;
+      const ltp = price;
+      const currValue = ltp * totalQty;
+      const netChange = ((currValue - totalCost) / totalCost) * 100;
+      const net = `${netChange >= 0 ? "+" : ""}${netChange.toFixed(2)}%`;
+      const isLoss = currValue < totalCost;
+
+      holding.qty = totalQty;
+      holding.avg = newAvg;
+      holding.price = ltp;
+      holding.net = net;
+      holding.isLoss = isLoss;
+
+      await holding.save();
+    } else if (order.model === "Sell") {
+      // Adjust only qty
+      holding.qty = holding.qty + oldQty - qty;
+
+      if (holding.qty <= 0) {
+        await HoldingsModel.deleteOne({ name: order.name });
+      } else {
+        const ltp = price;
+        const currValue = ltp * holding.qty;
+        const totalInvestment = holding.avg * holding.qty;
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+        const net = `${netChange >= 0 ? "+" : ""}${netChange.toFixed(2)}%`;
+        const isLoss = currValue < totalInvestment;
+
+        holding.price = ltp;
+        holding.net = net;
+        holding.isLoss = isLoss;
+
+        await holding.save();
+      }
+    }
+
+    return res.status(200).json({ message: "Order and holding updated" });
+  } catch (error) {
+    console.error("Edit error:", error);
+    return res.status(500).json({ message: "Failed to edit order", error });
+  }
+});
