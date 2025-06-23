@@ -399,26 +399,34 @@ app.put("/editOrder/:id", async (req, res) => {
 
       await holding.save();
     } else if (order.model === "Sell") {
-      // Adjust only qty
-      holding.qty = holding.qty + oldQty - qty;
+  // Calculate what the new holding qty would become
+  const newQty = holding.qty + oldQty - qty;
 
-      if (holding.qty <= 0) {
-        await HoldingsModel.deleteOne({ name: order.name });
-      } else {
-        const ltp = price;
-        const currValue = ltp * holding.qty;
-        const totalInvestment = holding.avg * holding.qty;
-        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
-        const net = `${netChange >= 0 ? "+" : ""}${netChange.toFixed(2)}%`;
-        const isLoss = currValue < totalInvestment;
+  if (newQty < 0) {
+    return res.status(400).json({
+      message: `Invalid update: You cannot sell more than you currently hold. Holding: ${holding.qty}, Attempting to sell: ${qty}`
+    });
+  }
 
-        holding.price = ltp;
-        holding.net = net;
-        holding.isLoss = isLoss;
+  // Proceed with update
+  if (newQty === 0) {
+    await HoldingsModel.deleteOne({ name: order.name });
+  } else {
+    const ltp = price;
+    const currValue = ltp * newQty;
+    const totalInvestment = holding.avg * newQty;
+    const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+    const net = `${netChange >= 0 ? "+" : ""}${netChange.toFixed(2)}%`;
+    const isLoss = currValue < totalInvestment;
 
-        await holding.save();
-      }
-    }
+    holding.qty = newQty;
+    holding.price = ltp;
+    holding.net = net;
+    holding.isLoss = isLoss;
+
+    await holding.save();
+  }
+}
 
     return res.status(200).json({ message: "Order and holding updated" });
   } catch (error) {
