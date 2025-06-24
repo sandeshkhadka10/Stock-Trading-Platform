@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import "./EditActionWindow.css";
@@ -12,8 +12,17 @@ const EditActionWindow = ({ uid }) => {
   const [editStockPrice, setEditStockPrice] = useState("");
   const [allHoldings, setAllHoldings] = useState([]);
 
+  // it is done to fetch the previous data in the input field
+  useEffect(()=>{
+    axios.get(`http://localhost:3002/getOrder/${uid}`).then((res)=>{
+      const order = res.data;
+      setEditStockQuantity(order.qty);
+      setEditStockPrice(order.price);
+    });
+  },[uid]);
+
   const handleEditClick = () => {
-    axios.post("http://localhost:3002//editOrder/${editOrder._id}", {
+    axios.post(`http://localhost:3002/editOrder/${uid}`, {
       name: uid,
       qty: editStockQuantity,
       price:editStockPrice
@@ -23,7 +32,7 @@ const EditActionWindow = ({ uid }) => {
           setAllHoldings(res.data);
         });
       });
-    generalContext.closeSellWindow();
+    generalContext.closeEditWindow();
   };
 
   const generalContext = useContext(GeneralContext);

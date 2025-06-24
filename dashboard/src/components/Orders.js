@@ -37,7 +37,7 @@ const Orders = () => {
                   <td>{stock.qty}</td>
                   <td>{stock.price}</td>
                   <td>{total}</td>
-                  <td>{<OrderListActions uid={stock.name} />}</td>
+                  <td>{<OrderListActions uid={stock._id} />}</td>
                 </tr>
               );
             })}
@@ -56,8 +56,13 @@ const OrderListActions = ({ uid }) => {
 
   return (
     <div>
-       <button onClick={handleEditClick} style={{padding:"3px", margin:"1rem"}}>Edit</button>
-       <button style={{padding:"3px"}}>Cancel</button>
+      <button
+        onClick={handleEditClick}
+        style={{ padding: "3px", margin: "1rem" }}
+      >
+        Edit
+      </button>
+      <button style={{ padding: "3px" }}>Cancel</button>
     </div>
   );
 };

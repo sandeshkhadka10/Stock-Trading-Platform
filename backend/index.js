@@ -356,6 +356,12 @@ app.get("/allOrders", async (req, res) => {
   res.json(allOrders);
 });
 
+app.get("/getOrder/:id",async(req,res)=>{
+  const {id} = req.params;
+  let oneOrder = await OrdersModel.findById(id);
+  res.json(oneOrder);
+});
+
 app.put("/editOrder/:id", async (req, res) => {
   try {
     let { id } = req.params;
