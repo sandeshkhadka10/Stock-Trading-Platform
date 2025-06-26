@@ -4,12 +4,30 @@ import GeneralContext from "./GeneralContext";
 
 const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
+  const [allHoldings, setAllHoldings] = useState([]);
   useEffect(() => {
     axios.get("http://localhost:3002/allOrders").then((res) => {
       console.log(res.data);
       setAllOrders(res.data);
     });
   }, []);
+
+  // it is for canceling the sell or buy of the related stock
+  const handleCancelClick = (uid) => {
+  axios.delete(`http://localhost:3002/deleteOrder/${uid}`)
+    .then(() => {
+      // Remove deleted order from allOrders immediately
+      setAllOrders((prevOrders) => prevOrders.filter(order => order._id !== uid));
+
+      // Update holdings if needed
+      axios.get("http://localhost:3002/allHoldings").then((res) => {
+        setAllHoldings(res.data);
+      });
+    })
+    .catch((err) => {
+      console.error("Delete failed:", err.response?.data || err.message);
+    });
+};
 
   return (
     <div className="orders">
@@ -37,7 +55,7 @@ const Orders = () => {
                   <td>{stock.qty}</td>
                   <td>{stock.price}</td>
                   <td>{total}</td>
-                  <td>{<OrderListActions uid={stock._id} />}</td>
+                  <td>{<OrderListActions uid={stock._id} onDelete={handleCancelClick} />}</td>
                 </tr>
               );
             })}
@@ -48,7 +66,7 @@ const Orders = () => {
   );
 };
 
-const OrderListActions = ({ uid }) => {
+const OrderListActions = ({ uid, onDelete }) => {
   const generalContext = useContext(GeneralContext);
   const handleEditClick = () => {
     generalContext.openEditWindow(uid);
@@ -56,13 +74,8 @@ const OrderListActions = ({ uid }) => {
 
   return (
     <div>
-      <button
-        onClick={handleEditClick}
-        style={{ padding: "3px", margin: "1rem" }}
-      >
-        Edit
-      </button>
-      <button style={{ padding: "3px" }}>Cancel</button>
+      <button onClick={handleEditClick}>Edit</button>
+      <button onClick={()=>onDelete(uid)}>Cancel</button>
     </div>
   );
 };

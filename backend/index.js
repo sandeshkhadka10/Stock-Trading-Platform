@@ -365,8 +365,8 @@ app.get("/getOrder/:id",async(req,res)=>{
 app.put("/editOrder/:id", async (req, res) => {
   try {
     let { id } = req.params;
-    const { qty, price } = req.body;
-    const order = await OrdersModel.findByIdAndUpdate(id, { qty, price });
+    let { qty, price } = req.body;
+    let order = await OrdersModel.findByIdAndUpdate(id, { qty, price });
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -440,5 +440,49 @@ app.put("/editOrder/:id", async (req, res) => {
   } catch (error) {
     console.error("Edit error:", error);
     return res.status(500).json({ message: "Failed to edit order", error });
+  }
+});
+
+app.delete("/deleteOrder/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await OrdersModel.findById(id);
+    if (!order) {
+      return res.status(404).send({ message: "Order not found" });
+    }
+    const { name, qty, price, model } = order;
+
+    await OrdersModel.findByIdAndDelete(id);
+
+    let holding = await HoldingsModel.findOne({ name });
+    if (!holding) {
+      return res.status(200).send({ message: "Order deleted. No holding found." });
+    }
+    
+    // 4. Update the holding based on type
+    if (model === "Buy") {
+      const totalCost = holding.avg * holding.qty;
+      const removedCost = price * qty;
+      const newQty = holding.qty - qty;
+
+      if (newQty <= 0) {
+        await HoldingsModel.deleteOne({ name });
+      } else {
+        const newAvg = (totalCost - removedCost) / newQty;
+        holding.qty = newQty;
+        holding.avg = newAvg;
+        await holding.save();
+      }
+    }
+
+    if (model === "Sell") {
+      holding.qty += qty; // undo the sell
+      await holding.save();
+    }
+
+    res.status(200).send({ message: "Order and holdings updated" });
+  } catch (error) {
+    console.error("Error deleting stock order:", error);
+    res.status(500).send({ message: "Internal server error" });
   }
 });
