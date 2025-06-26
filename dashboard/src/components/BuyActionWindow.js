@@ -1,23 +1,25 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-
 import "./BuyActionWindow.css";
-
 import axios from "axios";
-
 import GeneralContext from "./GeneralContext";
+import { useForm } from "react-hook-form";
 
 const BuyActionWindow = ({ uid }) => {
-  const [stockQuantity, setStockQuantity] = useState(1);
-  const [stockPrice, setStockPrice] = useState(0.0);
   const [allHoldings, setAllHoldings] = useState([]);
+  const generalContext = useContext(GeneralContext);
 
-  const handleBuyClick = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmitHandler = (data) => {
     axios
       .post("http://localhost:3002/newOrder", {
         name: uid,
-        qty: stockQuantity,
-        price: stockPrice,
+        qty: data.qty,
+        price: data.price,
         model: "Buy",
       })
       .then(() => {
@@ -28,50 +30,74 @@ const BuyActionWindow = ({ uid }) => {
     generalContext.closeBuyWindow();
   };
 
-  const generalContext = useContext(GeneralContext);
   const handleCancelClick = () => {
     generalContext.closeBuyWindow();
   };
 
   return (
     <div className="container" id="buy-window" draggable="true">
-      <div className="regular-order">
-        <div className="inputs">
-          <fieldset>
-            <legend>Qty.</legend>
-            <input
-              type="number"
-              name="qty"
-              id="qty"
-              onChange={(e) => setStockQuantity(e.target.value)}
-              value={stockQuantity}
-            />
-          </fieldset>
-          <fieldset>
-            <legend>Price</legend>
-            <input
-              type="number"
-              name="price"
-              id="price"
-              step="0.05"
-              onChange={(e) => setStockPrice(e.target.value)}
-              value={stockPrice}
-            />
-          </fieldset>
-        </div>
-      </div>
+      <form onSubmit={handleSubmit(onSubmitHandler)}>
+        <div className="regular-order">
+          <div className="inputs">
+            <fieldset>
+              <legend>Qty.</legend>
+              <input
+                type="number"
+                name="qty"
+                id="qty"
+                placeholder="1"
+                {...register("qty", {
+                  required: "Quantity is required",
+                  min: {
+                    value: 1,
+                    message: "Minimum quantity is 1"
+                  }
+                })}
+              />
+              <span style={{ color: "red" }}>
+                {errors.qty && <p>{errors.qty.message}</p>}
+              </span>
+            </fieldset>
 
-      <div className="buttons">
-        <span>Margin required ₹140.65</span>
-        <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
-            Cancel
-          </Link>
+            <fieldset>
+              <legend>Price</legend>
+              <input 
+                type="number" 
+                name="price" 
+                id="price" 
+                placeholder="Rs 1500"
+                {...register("price",{
+                  required:"Price is required",
+                  min:{
+                    value:1000,
+                    message:"Minimum price is Rs 1000"
+                  }
+                })}
+              />
+              <span style={{ color: "red" }}>
+                {errors.price && <p>{errors.price.message}</p>}
+              </span>
+            </fieldset>
+          </div>
         </div>
-      </div>
+
+        <div className="buttons">
+          <span>Margin required ₹140.65</span>
+          <div>
+            <button type="submit" className="btn btn-blue" style={{border:"none"}}>
+              Buy
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-grey" 
+              onClick={handleCancelClick}
+              style={{border:"none"}}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
