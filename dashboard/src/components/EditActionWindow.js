@@ -12,6 +12,7 @@ const EditActionWindow = ({ uid }) => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue
   } = useForm();
   const generalContext = useContext(GeneralContext);
 
@@ -21,12 +22,15 @@ const EditActionWindow = ({ uid }) => {
       const order = res.data;
       setEditStockQuantity(order.qty);
       setEditStockPrice(order.price);
+
+      setValue("qty",order.qty);
+      setValue("price",order.price);
     });
-  }, [uid]);
+  }, [uid,setValue]);
 
   const onSubmitHandler = (data) => {
     axios
-      .post(`http://localhost:3002/editOrder/${uid}`, {
+      .put(`http://localhost:3002/editOrder/${uid}`, {
         name: uid,
         qty: data.qty,
         price: data.price,
@@ -54,7 +58,6 @@ const EditActionWindow = ({ uid }) => {
                 type="number"
                 name="qty"
                 id="qty"
-                defaultValue={editStockQuantity}
                 {...register("qty",{
                   required:"Quantity is required",
                   min:{
@@ -72,8 +75,7 @@ const EditActionWindow = ({ uid }) => {
                 name="price"
                 id="price"
                 step="0.05"
-                defaultValue={editStockPrice}
-                {...register,("price",{
+                {...register("price",{
                   required:"Price is required",
                   min:{
                     value:100,
@@ -81,7 +83,7 @@ const EditActionWindow = ({ uid }) => {
                   }
                 })}
               />
-              <span>{errors.price && <p>{errors.message.price}</p>}</span>
+              <span>{errors.price && <p>{errors.price.message}</p>}</span>
             </fieldset>
           </div>
         </div>
