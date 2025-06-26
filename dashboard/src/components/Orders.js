@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
+import {Link} from "react-router-dom";
 
 const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
@@ -14,20 +15,23 @@ const Orders = () => {
 
   // it is for canceling the sell or buy of the related stock
   const handleCancelClick = (uid) => {
-  axios.delete(`http://localhost:3002/deleteOrder/${uid}`)
-    .then(() => {
-      // Remove deleted order from allOrders immediately
-      setAllOrders((prevOrders) => prevOrders.filter(order => order._id !== uid));
+    axios
+      .delete(`http://localhost:3002/deleteOrder/${uid}`)
+      .then(() => {
+        // Remove deleted order from allOrders immediately
+        setAllOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== uid)
+        );
 
-      // Update holdings if needed
-      axios.get("http://localhost:3002/allHoldings").then((res) => {
-        setAllHoldings(res.data);
+        // Update holdings if needed
+        axios.get("http://localhost:3002/allHoldings").then((res) => {
+          setAllHoldings(res.data);
+        });
+      })
+      .catch((err) => {
+        console.error("Delete failed:", err.response?.data || err.message);
       });
-    })
-    .catch((err) => {
-      console.error("Delete failed:", err.response?.data || err.message);
-    });
-};
+  };
 
   return (
     <div className="orders">
@@ -42,7 +46,6 @@ const Orders = () => {
               <th>Qty</th>
               <th>Price</th>
               <th>Total</th>
-              <th>Actions</th>
             </tr>
             {allOrders.map((stock, index) => {
               const total = stock.price * stock.qty;
@@ -55,7 +58,14 @@ const Orders = () => {
                   <td>{stock.qty}</td>
                   <td>{stock.price}</td>
                   <td>{total}</td>
-                  <td>{<OrderListActions uid={stock._id} onDelete={handleCancelClick} />}</td>
+                  <td>
+                    {
+                      <OrderListActions
+                        uid={stock._id}
+                        onDelete={handleCancelClick}
+                      />
+                    }
+                  </td>
                 </tr>
               );
             })}
@@ -73,9 +83,15 @@ const OrderListActions = ({ uid, onDelete }) => {
   };
 
   return (
-    <div>
-      <button onClick={handleEditClick}>Edit</button>
-      <button onClick={()=>onDelete(uid)}>Cancel</button>
+    <div className="buttons">
+      <div>
+        <Link className="btn btn-blue" onClick={handleEditClick}>
+          Edit
+        </Link>
+        <Link to="" className="btn btn-grey" onClick={()=>onDelete(uid)}>
+          Cancel
+        </Link>
+      </div>
     </div>
   );
 };

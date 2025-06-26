@@ -458,8 +458,7 @@ app.delete("/deleteOrder/:id", async (req, res) => {
     if (!holding) {
       return res.status(200).send({ message: "Order deleted. No holding found." });
     }
-    
-    // 4. Update the holding based on type
+
     if (model === "Buy") {
       const totalCost = holding.avg * holding.qty;
       const removedCost = price * qty;
