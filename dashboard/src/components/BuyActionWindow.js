@@ -70,7 +70,7 @@ const BuyActionWindow = ({ uid }) => {
                   required:"Price is required",
                   min:{
                     value:100,
-                    message:"Minimum price is Rs 1000"
+                    message:"Minimum price is Rs 100"
                   }
                 })}
               />
