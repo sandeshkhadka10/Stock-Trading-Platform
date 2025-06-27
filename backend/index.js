@@ -14,6 +14,8 @@ const { OrdersModel } = require("./model/OrdersModel");
 
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const cookieParser  = require("cookie-parser");
+const authRoute = require("./routes/AuthRoute");
 
 app.listen(3002, () => {
   console.log("App started!");
@@ -23,6 +25,8 @@ app.listen(3002, () => {
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use("/",authRoute);
 
 // adding the dummy data for holdings in the database
 // app.get("/addHoldings",(req, res) => {
