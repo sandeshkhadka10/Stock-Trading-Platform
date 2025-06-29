@@ -2,6 +2,7 @@ import React from "react";
 import Hero from "./Hero";
 import LeftSection from "./LeftSection";
 import RightSection from "./RightSection";
+import {Link} from "react-router-dom";
 
 function Universe() {
   return (
@@ -36,7 +37,7 @@ function Universe() {
           <img src="media/images/tijori.svg" style={{width:"25%"}}/>
           <p className="text-small text-muted">Investment research platform</p>
         </div>
-        <button className="p-2 btn btn-primary fs-5 mt-5" style={{width:"20%", margin:"0 auto"}}>Signup Now</button>
+        <Link to={"/signup"} className="p-2 btn btn-primary fs-5 mt-5" style={{width:"20%", margin:"0 auto"}}>Signup Now</Link>
       </div>
     </div>
   );
