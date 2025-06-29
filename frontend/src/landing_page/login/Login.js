@@ -65,7 +65,9 @@ const Login = () => {
                 Login
               </button>
             </div>
-            <span>Already have an account? <Link to={"/signup"}>Signup</Link></span>
+            <div className="text-center mt-2">
+                <span>Already have an account? <Link to={"/signup"}>Signup</Link></span>
+            </div>
           </form>
         </div>
       </div>
