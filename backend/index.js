@@ -23,7 +23,10 @@ app.listen(3002, () => {
   console.log("Database connected");
 });
 
-app.use(cors());
+app.use(cors({
+  origin:"*",
+  credentials:true
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/",authRoute);
