@@ -20,14 +20,14 @@ const Signup = () => {
           <h2 className="text-center mt-3">Signup Now</h2>
           <form>
             <div className="mb-3 fs-5">
-              <label htmlFor="fullName" className="form-label">
+              <label htmlFor="username" className="form-label">
                 Username
               </label>
               <input
                 type="text"
                 className="form-control"
-                id="fullName"
-                {...register("fullName", {
+                id="username"
+                {...register("username", {
                   required: "Username is required required",
                 })}
               ></input>
