@@ -9,7 +9,7 @@ module.exports.Signup = async(req,res,next) => {
         if(existingUser){
             return res.json({message:"User already exists"});
         }
-        const noneExistingUser = await UsersModel.create({email,password,username,createdAt});
+        const noneExistingUser = await UsersModel.create({username,email,password,createdAt});
         const token = createSecretToken(noneExistingUser._id);
         res.cookie("token",token,{
             withCredentials: true,

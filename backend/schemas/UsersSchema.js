@@ -2,14 +2,14 @@ const {Schema} = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const UsersSchema = new Schema({
+    username:{
+        type:String,
+        required:[true,"Your username is required"],
+    },
     email:{
         type:String,
         required: [true,"Your emal address is required"],
         unique: true
-    },
-    username:{
-        type:String,
-        required:[true,"Your username is required"],
     },
     password:{
         type:String,
