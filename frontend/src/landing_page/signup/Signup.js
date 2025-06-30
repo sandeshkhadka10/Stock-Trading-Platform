@@ -2,7 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
   const {
@@ -12,13 +13,48 @@ const Signup = () => {
     reset,
   } = useForm();
 
+  const handleSuccess = (msg) => {
+    toast.success(msg, {
+      position: "bottom-left",
+    });
+  };
+
+  const handleError = (err) => {
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post("http://localhost:3002/signup", data, {
+        withCredentials: true,
+      });
+      
+      // Check for success flag instead of just message existence
+      if (response.data.success) {
+        handleSuccess(response.data.message || "Signup Successful");
+        reset();
+        
+        setTimeout(() => {
+          window.location.href = "http://localhost:3000/";
+        }, 2000);
+      } else {
+        handleError(response.data.message || "Signup Failed");
+      }
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || "Signup Failed";
+      handleError(errorMessage);
+    }
+  };
+
   return (
     <div className="container" style={{ width: "30%" }}>
       <ToastContainer />
       <div className="row">
         <div className="col">
           <h2 className="text-center mt-3">Signup Now</h2>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-5">
               <label htmlFor="username" className="form-label">
                 Username
@@ -28,11 +64,11 @@ const Signup = () => {
                 className="form-control"
                 id="username"
                 {...register("username", {
-                  required: "Username is required required",
+                  required: "Username is required",
                 })}
-              ></input>
-              {errors.fullName && (
-                <p className="text-danger">{errors.fullName.message}</p>
+              />
+              {errors.username && (
+                <p className="text-danger">{errors.username.message}</p>
               )}
             </div>
 
@@ -51,11 +87,12 @@ const Signup = () => {
                     message: "Invalid email format",
                   },
                 })}
-              ></input>
+              />
               {errors.email && (
                 <p className="text-danger">{errors.email.message}</p>
               )}
             </div>
+            
             <div className="mb-3 fs-5">
               <label htmlFor="password" className="form-label">
                 Password
@@ -71,7 +108,7 @@ const Signup = () => {
                     message: "Password must be at least 6 characters",
                   },
                 })}
-              ></input>
+              />
               {errors.password && (
                 <p className="text-danger">{errors.password.message}</p>
               )}
@@ -83,7 +120,9 @@ const Signup = () => {
               </button>
             </div>
             <div className="text-center mt-2">
-                 <span>Already have an account? <Link to={"/login"}>Login</Link></span>
+              <span>
+                Already have an account? <Link to={"/login"}>Login</Link>
+              </span>
             </div>
           </form>
         </div>

@@ -24,7 +24,7 @@ app.listen(3002, () => {
 });
 
 app.use(cors({
-  origin:"*",
+  origin:"http://localhost:3001",
   credentials:true
 }));
 app.use(bodyParser.json());
