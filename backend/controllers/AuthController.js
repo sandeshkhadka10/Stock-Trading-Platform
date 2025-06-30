@@ -12,7 +12,6 @@ module.exports.Signup = async(req,res,next) => {
         const noneExistingUser = await UsersModel.create({username,email,password,createdAt});
         const token = createSecretToken(noneExistingUser._id);
         res.cookie("token",token,{
-            withCredentials: true,
             httpOnly:true,
         });
         res.status(201).json({message:"User signed in successfully", success: true, noneExistingUser});
@@ -38,11 +37,17 @@ module.exports.Login = async(req,res,next) => {
         }
         const token = createSecretToken(existingUser._id);
         res.cookie("token",token,{
-            withCredentials:true,
             httpOnly: true
         });
         res.status(201).json({message:"User logged in successfully", success:true});
     }catch(error){
         console.error(error);
     }
+};
+
+module.exports.Logout = (req,res) => {
+    res.clearCookie("token",{
+        httpOnly:true
+    });
+    res.status(200).json({message:"Logged out successfully"});
 };

@@ -10,20 +10,13 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
 
     useEffect(() =>{
-        // check if the user is already logged in (e.g. check local storage or cookies)
-        const token = localStorage.getItem("token");
-        if(token){
-            // fetch the user information from the server
-            fetchUserInfo(token);
-        }
+        fetchUserInfo();
     },[]);
 
     const fetchUserInfo = async(token) => {
         try{
             const response = await fetch("http://localhost:3002/user",{
-                headers:{
-                    Authorization: `Bearer ${token}`,
-                }
+                withCredentials: true
             });
             const data = await response.json();
             if(data.success){
@@ -35,17 +28,22 @@ export const AuthProvider = ({children}) => {
         }
     };
 
-    const login = (token,userInfo) => {
-        localStorage.setItem("token",token);
+    const login = (userInfo) => {
         setUser(userInfo);
         setIsAuthenticated(true);
     };
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        setUser(null);
-        setIsAuthenticated(false);
-    }
+    const logout = async() => {
+        try{
+            await axios.get("http://localhost:3002/user",{
+                withCredentials:true
+            });
+            setUser(null);
+            setIsAuthenticated(false);
+        }catch(error){
+            console.error("Logout failed: ",error);
+        }
+    };
 
     return(
         <AuthContext.Provider value={{isAuthenticated,user,login,logout}}>
