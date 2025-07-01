@@ -1,5 +1,5 @@
 import React,{createContext, useState, useEffect} from "react";
-import { userVerification } from "../../../../backend/middlewares/AuthMiddleware";
+import axios from "axios";
 
 
 // create the AuthContext

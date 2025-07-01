@@ -38,8 +38,8 @@ const Login = () => {
         reset();
 
         setTimeout(()=> {
-          // window.location.href= "http://localhost:3000/";
-          navigate("/");
+          window.open("http://localhost:3000/","_blank");
+          // navigate("/");
         },2000);
       }else{
         handleError(response.data.message || "Login Failed");

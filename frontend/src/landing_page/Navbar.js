@@ -1,7 +1,31 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "./context/AuthContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
+  const { isAuthenticated, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    toast.success("Logout Successful", {
+      position: "top-right",
+    });
+  };
+  const goToDashBoard = (event) => {
+    event.preventDefault();
+    if (isAuthenticated) {
+      window.open("http://localhost:3000/","_blank");
+    } else {
+      toast.error("Login first to access the dashboard", {
+        position: "top-right",
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  };
   return (
     <nav
       className="navbar navbar-expand-lg border-bottom"
@@ -30,9 +54,24 @@ function Navbar() {
           <form className="d-flex" role="search">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/signup">
-                  Signup
-                </Link>
+                <div>
+                  {isAuthenticated ? (
+                    <button
+                      style={{ background: "none", border: "none" }}
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    <Link
+                      className="nav-link active"
+                      aria-current="page"
+                      to="/signup"
+                    >
+                      Signup
+                    </Link>
+                  )}
+                </div>
               </li>
               <li className="nav-item">
                 <Link className="nav-link active" to="/about">
@@ -53,6 +92,11 @@ function Navbar() {
                 <Link className="nav-link active" to="/support">
                   Support
                 </Link>
+              </li>
+              <li className="nav-item">
+                <button className="nav-link active" onClick={goToDashBoard}>
+                  Dashboard
+                </button>
               </li>
             </ul>
           </form>
