@@ -2,7 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {Link} from "react-router-dom";
+import {Link,useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const {
@@ -12,13 +13,51 @@ const Login = () => {
     reset,
   } = useForm();
 
+  const navigate = useNavigate();
+
+  const handleSuccess = (msg) => {
+    toast.success(msg,{
+      position:"bottom-left"
+    });
+  };
+
+  const handleError = (err) => {
+    toast.error(err,{
+      position:"bottom-left"
+    });
+  };
+
+  const onSubmit = async(data) => {
+    try{
+      const response = await axios.post("http://localhost:3002/login",data,{
+        withCredentials: true
+      });
+
+      if(response.data.success){
+        handleSuccess(response.data.message || "Login Successful");
+        reset();
+
+        setTimeout(()=> {
+          // window.location.href= "http://localhost:3000/";
+          navigate("/");
+        },2000);
+      }else{
+        handleError(response.data.message || "Login Failed");
+      }
+    }catch(error){
+      const errorMessage = error?.response?.data?.message || "Login Failed";
+      handleError(errorMessage);
+    }
+  }
+
+
   return (
     <div className="container" style={{ width: "30%" }}>
       <ToastContainer />
       <div className="row">
         <div className="col">
           <h2 className="text-center mt-3">Login Now</h2>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-5">
               <label htmlFor="email" className="form-label">
                 Email
