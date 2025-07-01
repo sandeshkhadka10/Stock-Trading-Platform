@@ -39,8 +39,8 @@ const Signup = () => {
         reset();
         
         setTimeout(() => {
-          window.open("http://localhost:3000/","_blank");
-          // navigate("/");
+          // window.open("http://localhost:3000/","_blank");
+          navigate("/");
         }, 2000);
       } else {
         handleError(response.data.message || "Signup Failed");
@@ -122,11 +122,11 @@ const Signup = () => {
                 Signup
               </button>
             </div>
-            <div className="text-center mt-2">
+            {/* <div className="text-center mt-2">
               <span>
                 Already have an account? <Link to={"/login"}>Login</Link>
               </span>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

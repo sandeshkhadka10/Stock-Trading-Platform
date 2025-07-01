@@ -38,7 +38,7 @@ const Login = () => {
         reset();
 
         setTimeout(()=> {
-          window.open("http://localhost:3000/","_blank");
+          window.location.href = "http://localhost:3000/";
           // navigate("/");
         },2000);
       }else{

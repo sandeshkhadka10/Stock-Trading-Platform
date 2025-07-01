@@ -13,12 +13,11 @@ export const AuthProvider = ({children}) => {
         fetchUserInfo();
     },[]);
 
-    const fetchUserInfo = async(token) => {
+    const fetchUserInfo = async() => {
         try{
-            const response = await fetch("http://localhost:3002/user",{
+            const {data} = await axios.get("http://localhost:3002/user",{
                 withCredentials: true
             });
-            const data = await response.json();
             if(data.success){
                 setUser(data.existingUser);
                 setIsAuthenticated(true);
@@ -35,7 +34,7 @@ export const AuthProvider = ({children}) => {
 
     const logout = async() => {
         try{
-            await axios.get("http://localhost:3002/user",{
+            await axios.get("http://localhost:3002/logout",{
                 withCredentials:true
             });
             setUser(null);
