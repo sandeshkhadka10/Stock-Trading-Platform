@@ -14,8 +14,12 @@ function Team() {
           <img
             src="media/images/nithinKamath.jpg"
             alt="nithin photo"
-            style={{ borderRadius: "100", width: "50%" }}
-          ></img>
+            style={{
+              borderRadius: "50%",
+              width: "250px",
+              height: "250px",
+            }}
+          />
           <h4 className="mt-4">Nithin Kamath</h4>
           <h6>Founder, CEO</h6>
         </div>
@@ -29,11 +33,24 @@ function Team() {
             He is a member of the SEBI Secondary Market Advisory Committee
             (SMAC) and the Market Data Advisory Committee (MDAC).
           </p>
+          <p>Playing basketball is his zen.</p>
           <p>
-            Playing basketball is his zen.
-          </p>
-          <p>
-            Connect on <a href="" style={{textDecoration:"none"}}>Homepage</a>/ <a href="" style={{textDecoration:"none"}}>TradingQnA</a>/ <a href="" style={{textDecoration:"none"}}>Homepage</a>/ <a href="" style={{textDecoration:"none"}}>Twitter</a>
+            Connect on{" "}
+            <a href="" style={{ textDecoration: "none" }}>
+              Homepage
+            </a>
+            /{" "}
+            <a href="" style={{ textDecoration: "none" }}>
+              TradingQnA
+            </a>
+            /{" "}
+            <a href="" style={{ textDecoration: "none" }}>
+              Homepage
+            </a>
+            /{" "}
+            <a href="" style={{ textDecoration: "none" }}>
+              Twitter
+            </a>
           </p>
         </div>
       </div>
