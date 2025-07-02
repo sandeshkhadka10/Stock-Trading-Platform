@@ -24,9 +24,10 @@ app.listen(3002, () => {
 });
 
 app.use(cors({
-  origin:"http://localhost:3001",
-  credentials:true
+  origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow both ports
+  credentials: true
 }));
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use("/",authRoute);
