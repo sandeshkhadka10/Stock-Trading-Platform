@@ -2,7 +2,7 @@ import React,{useContext} from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {Link,useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import axios from "axios";
 import {AuthContext} from "../context/AuthContext";
 
@@ -14,7 +14,6 @@ const Login = () => {
     reset,
   } = useForm();
 
-  const navigate = useNavigate();
   const {login} = useContext(AuthContext);
 
   const handleSuccess = (msg) => {
@@ -54,7 +53,7 @@ const Login = () => {
     }
 
     setTimeout(() => {
-     navigate("/")
+     window.location.href = "http://localhost:3000/";
     }, 2000);
   } catch (error) {
     const errorMessage = error?.response?.data?.message || "Login Failed";
