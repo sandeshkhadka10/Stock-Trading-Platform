@@ -1,9 +1,10 @@
-import React from "react";
+import React,{useContext} from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {Link,useNavigate} from "react-router-dom";
 import axios from "axios";
+import {AuthContext} from "../context/AuthContext";
 
 const Login = () => {
   const {
@@ -14,6 +15,7 @@ const Login = () => {
   } = useForm();
 
   const navigate = useNavigate();
+  const {login} = useContext(AuthContext);
 
   const handleSuccess = (msg) => {
     toast.success(msg,{
@@ -27,28 +29,39 @@ const Login = () => {
     });
   };
 
-  const onSubmit = async(data) => {
-    try{
-      const response = await axios.post("http://localhost:3002/login",data,{
-        withCredentials: true
-      });
+  const onSubmit = async (data) => {
+  try {
+    const response = await axios.post("http://localhost:3002/login", data, {
+      withCredentials: true,
+    });
 
-      if(response.data.success){
-        handleSuccess(response.data.message || "Login Successful");
-        reset();
-
-        setTimeout(()=> {
-          window.location.href = "http://localhost:3000/";
-          // navigate("/");
-        },2000);
-      }else{
-        handleError(response.data.message || "Login Failed");
-      }
-    }catch(error){
-      const errorMessage = error?.response?.data?.message || "Login Failed";
-      handleError(errorMessage);
+    if (!response.data.success) {
+      handleError(response.data.message || "Login Failed");
+      return;
     }
+
+    // If login successful
+    handleSuccess(response.data.message || "Login Successful");
+    reset();
+
+    // fetch the user info to update context
+    const userInfo = await axios.get("http://localhost:3002/user", {
+      withCredentials: true,
+    });
+
+    if (userInfo.data.success) {
+      login(userInfo.data.existingUser);
+    }
+
+    setTimeout(() => {
+     navigate("/")
+    }, 2000);
+  } catch (error) {
+    const errorMessage = error?.response?.data?.message || "Login Failed";
+    handleError(errorMessage);
   }
+};
+
 
 
   return (

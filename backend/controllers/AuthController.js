@@ -25,21 +25,21 @@ module.exports.Login = async(req,res,next) => {
     try{
         const {email,password} = req.body;
         if(!email || !password){
-            return res.json({mesasge:"All fields are required"});
+            return res.json({success:false,mesasge:"All fields are required"});
         }
         const existingUser = await UsersModel.findOne({email});
         if(!existingUser){
-            return res.json({message:"Incorrect email or password"});
+            return res.json({success:false,message:"Incorrect email or password"});
         }
         const auth = await bcrypt.compare(password,existingUser.password);
         if(!auth){
-            return res.json({message:"Incorrect email or password"});
+            return res.json({success:false,message:"Incorrect email or password"});
         }
         const token = createSecretToken(existingUser._id);
         res.cookie("token",token,{
-            httpOnly: true
+            httpOnly: true,
         });
-        res.status(201).json({message:"User logged in successfully", success:true});
+        res.status(201).json({success:true,message:"User logged in successfully"});
     }catch(error){
         console.error(error);
     }
@@ -47,7 +47,7 @@ module.exports.Login = async(req,res,next) => {
 
 module.exports.Logout = (req,res) => {
     res.clearCookie("token",{
-        httpOnly:true
+        httpOnly:true,
     });
     res.status(200).json({message:"Logged out successfully"});
 };

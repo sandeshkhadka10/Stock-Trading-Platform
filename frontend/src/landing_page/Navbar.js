@@ -10,7 +10,7 @@ function Navbar() {
   const handleLogout = () => {
     logout();
     toast.success("Logout Successful", {
-      position: "top-right",
+      position: "bottom-left",
     });
   };
   const goToDashBoard = (event) => {
@@ -19,7 +19,7 @@ function Navbar() {
       window.location.href = "http://localhost:3000/";
     } else {
       toast.error("Login first to access the dashboard", {
-        position: "top-right",
+        position: "bottom-left",
       });
       setTimeout(() => {
         navigate("/login");
