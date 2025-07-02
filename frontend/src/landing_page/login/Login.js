@@ -54,7 +54,7 @@ const Login = () => {
 
     setTimeout(() => {
      window.location.href = "http://localhost:3000/";
-    }, 2000);
+    }, 1000);
   } catch (error) {
     const errorMessage = error?.response?.data?.message || "Login Failed";
     handleError(errorMessage);

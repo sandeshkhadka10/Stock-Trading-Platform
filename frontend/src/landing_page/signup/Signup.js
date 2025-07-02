@@ -2,7 +2,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Signup = () => {
@@ -12,8 +11,6 @@ const Signup = () => {
     formState: { errors },
     reset,
   } = useForm();
-
-  const navigate = useNavigate();
 
   const handleSuccess = (msg) => {
     toast.success(msg, {
@@ -39,9 +36,8 @@ const Signup = () => {
         reset();
         
         setTimeout(() => {
-          // window.open("http://localhost:3000/","_blank");
-          navigate("/");
-        }, 2000);
+          window.location.href = "http://localhost:3000/";
+        }, 1000);
       } else {
         handleError(response.data.message || "Signup Failed");
       }

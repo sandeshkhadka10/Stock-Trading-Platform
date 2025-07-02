@@ -7,12 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 function Navbar() {
   const { isAuthenticated, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
     toast.success("Logout Successful", {
       position: "bottom-left",
     });
   };
+
   const goToDashBoard = (event) => {
     event.preventDefault();
     if (isAuthenticated) {
@@ -26,6 +28,7 @@ function Navbar() {
       }, 1000);
     }
   };
+  
   return (
     <nav
       className="navbar navbar-expand-lg border-bottom"
@@ -56,7 +59,7 @@ function Navbar() {
               <li className="nav-item">
                 <div>
                   {isAuthenticated ? (
-                    <button
+                    <button className="nav-link active"
                       style={{ background: "none", border: "none" }}
                       onClick={handleLogout}
                     >
