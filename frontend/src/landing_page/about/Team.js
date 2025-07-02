@@ -16,8 +16,8 @@ function Team() {
             alt="nithin photo"
             style={{
               borderRadius: "50%",
-              width: "250px",
-              height: "250px",
+              width: "200px",
+              height: "200px",
             }}
           />
           <h4 className="mt-4">Nithin Kamath</h4>
