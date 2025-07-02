@@ -18,7 +18,8 @@ const Menu = () => {
 
   return (
     <div className="menu-container">
-      <img src="logo.png" style={{ width: "40px" }} />
+      <button onClick={() => window.location.href = "http://localhost:3001/"} style={{ background: "none", border: "none",cursor:"pointer",fontSize:"1.2rem"}}>Home Page</button>
+      {/* <img src="logo.png" style={{ width: "40px" }} /> */}
       <div className="menus">
         <ul>
           <li>
