@@ -18,7 +18,9 @@ const EditActionWindow = ({ uid }) => {
 
   // it is done to fetch the previous data in the input field
   useEffect(() => {
-    axios.get(`http://localhost:3002/getOrder/${uid}`).then((res) => {
+    axios.get(`http://localhost:3002/getOrder/${uid}`,{
+      withCredentials:true
+    }).then((res) => {
       const order = res.data;
       setEditStockQuantity(order.qty);
       setEditStockPrice(order.price);
@@ -34,9 +36,13 @@ const EditActionWindow = ({ uid }) => {
         name: uid,
         qty: data.qty,
         price: data.price,
+      },{
+        withCredentials:true
       })
       .then(() => {
-        axios.get("http://localhost:3002/allHoldings").then((res) => {
+        axios.get("http://localhost:3002/allHoldings",{
+          withCredentials:true
+        }).then((res) => {
           setAllHoldings(res.data);
         });
       });

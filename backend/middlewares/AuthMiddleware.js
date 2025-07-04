@@ -6,21 +6,22 @@ const jwt = require("jsonwebtoken");
 checks if the user has access to the route by
 checking if token match
 */
-module.exports.userVerification = (req,res) => {
-    const token = req.cookies.token;
-    if(!token){
-        return res.json({status:false});
+module.exports.userVerification = async (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ status: false, message: "No token found" });
+  }
+
+  jwt.verify(token, process.env.TOKEN_KEY, async (err, data) => {
+    if (err) {
+      return res.status(403).json({ status: false, message: "Invalid token" });
     }
-    jwt.verify(token, process.env.TOKEN_KEY ,async(err, data) => {
-        if(err){
-            return res.json({status: false});
-        }else{
-            const existingUser = await UsersModel.findById(data.id);
-            if(existingUser){
-                return res.json({status:true, existingUser:existingUser.username});
-            }else{
-                return res.json({status:false});
-            }
-        }
-    })
+
+    const existingUser = await UsersModel.findById(data.id);
+    if (!existingUser) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+    req.user = existingUser;
+    next();
+  });
 };

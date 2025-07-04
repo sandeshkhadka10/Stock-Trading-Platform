@@ -7,7 +7,9 @@ const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
   const [allHoldings, setAllHoldings] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:3002/allOrders").then((res) => {
+    axios.get("http://localhost:3002/allOrders",{
+      withCredentials:true
+    }).then((res) => {
       console.log(res.data);
       setAllOrders(res.data);
     });
@@ -16,7 +18,9 @@ const Orders = () => {
   // it is for canceling the sell or buy of the related stock
   const handleCancelClick = (uid) => {
     axios
-      .delete(`http://localhost:3002/deleteOrder/${uid}`)
+      .delete(`http://localhost:3002/deleteOrder/${uid}`,{
+        withCredentials:true
+      })
       .then(() => {
         // Remove deleted order from allOrders immediately
         setAllOrders((prevOrders) =>
@@ -24,7 +28,9 @@ const Orders = () => {
         );
 
         // Update holdings if needed
-        axios.get("http://localhost:3002/allHoldings").then((res) => {
+        axios.get("http://localhost:3002/allHoldings",{
+          withCredentials:true
+        }).then((res) => {
           setAllHoldings(res.data);
         });
       })

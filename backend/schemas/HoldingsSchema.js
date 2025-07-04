@@ -7,7 +7,12 @@ const HoldingsSchema = new Schema({
     price: Number,
     net: String,
     day: String,
-    isLoss: Boolean
+    isLoss: Boolean,
+    userId:{
+        type:Schema.Types.ObjectId,
+        ref:"Users",
+        required:true
+    }
 });
 
 module.exports = {HoldingsSchema};

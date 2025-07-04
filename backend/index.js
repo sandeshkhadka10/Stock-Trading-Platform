@@ -17,6 +17,8 @@ const cors = require("cors");
 const cookieParser  = require("cookie-parser");
 const authRoute = require("./routes/AuthRoute");
 
+const {userVerification} = require("./middlewares/AuthMiddleware");
+
 app.listen(3002, () => {
   console.log("App started!");
   mongoose.connect(url);
@@ -200,55 +202,53 @@ app.use("/",authRoute);
 // });
 
 // getting all the holdings values from the database
-app.get("/allHoldings", async (req, res) => {
-  let allHoldings = await HoldingsModel.find({});
-  res.json(allHoldings);
+app.get("/allHoldings",userVerification,async (req, res) => {
+  try{
+    let userId = req.user._id;
+    let allHoldings = await HoldingsModel.find({userId});
+    res.json(allHoldings);
+  }catch(err){
+    res.status(500).json({message:"Server Error"});
+  }
 });
 
 // getting all the positions values from the database
-app.get("/allPositions", async (req, res) => {
-  let allPositions = await PositionsModel.find({});
-  res.json(allPositions);
+app.get("/allPositions",userVerification, async (req, res) => {
+  try{
+    let userId = req.user._id;
+    let allPositions = await PositionsModel.find({userId});
+    res.json(allPositions);
+  }catch(err){
+    res.status(500).json({message:"Server Error"});
+  }
 });
 
 // it is for buying and selling the stock
-app.post("/newOrder", async (req, res) => {
-  // let newOrder = new OrdersModel({
-  //   name:req.body.name,
-  //   qty:req.body.qty,
-  //   price:req.body.price,
-  //   model:req.body.model
-  // });
-  // newOrder.save();
-  // res.send("Order Saved");
+app.post("/newOrder", userVerification, async (req, res) => {
   const { name, qty, price, model } = req.body;
+  const userId = req.user._id;
 
-  if (model == "Buy") {
+  if (model === "Buy") {
     try {
-      // Create and save the order directly
-      await OrdersModel.create({ name, qty, price, model });
+      await OrdersModel.create({ name, qty, price, model, userId });
 
-      // Check whether the stock that we bought exists or not
-      let existing = await HoldingsModel.findOne({ name });
+      let existing = await HoldingsModel.findOne({ name, userId });
+
+      const newQty = Number(qty);
+      const newPrice = Number(price);
 
       if (existing) {
-        const newQty = Number(qty);
-        const newPrice = Number(price);
-
         const totalQty = existing.qty + newQty;
         const totalCost = existing.avg * existing.qty + newPrice * newQty;
         const newAvg = totalCost / totalQty;
 
-        // LTP -> Latest price
         const ltp = newPrice;
-
         const currValue = ltp * totalQty;
         const isLoss = currValue < totalCost;
         const netChange = ((currValue - totalCost) / totalCost) * 100;
         const sign = netChange >= 0 ? "+" : "-";
         const net = `${sign}${netChange.toFixed(2)}%`;
 
-        // Update Fields
         existing.qty = totalQty;
         existing.avg = newAvg;
         existing.price = ltp;
@@ -261,16 +261,11 @@ app.post("/newOrder", async (req, res) => {
           .status(200)
           .json({ message: "Order placed and holdings updated" });
       } else {
-        // If it is not in the holding then adding there for the 1st time
-        const newQty = Number(qty);
-        const newPrice = Number(price);
-
         const avg = newPrice;
         const ltp = newPrice;
-        const currValue = ltp * newQty; // FIX 3: Use qty instead of avg
+        const currValue = ltp * newQty;
         const totalInvestment = avg * newQty;
-        const netChange =
-          ((currValue - totalInvestment) / totalInvestment) * 100;
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
         const sign = netChange >= 0 ? "+" : "-";
         const net = `${sign}${netChange.toFixed(2)}%`;
         const isLoss = currValue < totalInvestment;
@@ -281,62 +276,55 @@ app.post("/newOrder", async (req, res) => {
           avg,
           price: ltp,
           net,
-          day: "+0.00%", // later updating it with real time price using live api
+          day: "+0.00%",
           isLoss,
+          userId,
         });
 
         return res.status(201).json({ message: "New holding created" });
       }
     } catch (error) {
       console.error("Error processing order:", error);
-      return res
-        .status(500)
-        .json({ message: "Error processing order", error: error.message });
+      return res.status(500).json({
+        message: "Error processing order",
+        error: error.message,
+      });
     }
-  } else if (model == "Sell") {
+  } else if (model === "Sell") {
     try {
-      let existing = await HoldingsModel.findOne({ name });
+      let existing = await HoldingsModel.findOne({ name, userId });
+
       if (!existing) {
         return res.status(400).json({ message: "You don't own this stock" });
       }
+
       const sellQty = Number(qty);
       const sellPrice = Number(price);
 
-      // checking if it contains enough stock quantity to sell
       if (existing.qty < sellQty) {
         return res.status(400).json({
           message: `Insufficient quantity. You own ${existing.qty} shares but trying to sell ${sellQty}`,
         });
       }
-      // create and save the sell order
-      await OrdersModel.create({
-        name,
-        qty: sellQty,
-        price: sellPrice,
-        model,
-      });
 
-      // calculating the remaining quantity after sell
+      await OrdersModel.create({ name, qty: sellQty, price: sellPrice, model, userId });
+
       const remainingQty = existing.qty - sellQty;
-      if (remainingQty == 0) {
-        await HoldingsModel.deleteOne({ name });
-        return res
-          .status(200)
-          .json({ message: "All shares sold. Holding removed" });
+
+      if (remainingQty === 0) {
+        await HoldingsModel.deleteOne({ _id: existing._id });
+        return res.status(200).json({ message: "All shares sold. Holding removed" });
       } else {
-        // Update the holding with remaining quantity
         const ltp = sellPrice;
         const currValue = ltp * remainingQty;
         const totalInvestment = existing.avg * remainingQty;
-        const netChange =
-          ((currValue - totalInvestment) / totalInvestment) * 100;
-        const sign = netChange >= 0 ? "+" : "";
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
         const net = `${sign}${netChange.toFixed(2)}%`;
         const isLoss = currValue < totalInvestment;
 
-        // Update the holding
         existing.qty = remainingQty;
-        existing.price = ltp; // Update current price
+        existing.price = ltp;
         existing.net = net;
         existing.isLoss = isLoss;
 
@@ -348,57 +336,62 @@ app.post("/newOrder", async (req, res) => {
       }
     } catch (error) {
       console.error("Error processing order: ", error);
-      return res
-        .status(500)
-        .json({ message: "Error processing order", error: error, message });
+      return res.status(500).json({
+        message: "Error processing order",
+        error: error.message,
+      });
     }
   } else {
-    return res
-      .status(400)
-      .json({ message: "Invalid order model. Use 'Buy' or 'Sell'" });
+    return res.status(400).json({ message: "Invalid order model. Use 'Buy' or 'Sell'" });
   }
 });
 
-app.get("/allOrders", async (req, res) => {
-  let allOrders = await OrdersModel.find({});
-  res.json(allOrders);
+
+app.get("/allOrders",userVerification,async (req, res) => {
+  try{
+    const userId = req.user._id;
+    let allOrders = await OrdersModel.find({userId});
+    res.json(allOrders);
+  }catch(err){
+    res.status(500).json({message:"Server Error"});
+  }
 });
 
-app.get("/getOrder/:id",async(req,res)=>{
+app.get("/getOrder/:id",userVerification,async(req,res)=>{
   const {id} = req.params;
   let oneOrder = await OrdersModel.findById(id);
   res.json(oneOrder);
 });
 
-app.put("/editOrder/:id", async (req, res) => {
+app.put("/editOrder/:id", userVerification, async (req, res) => {
   try {
-    let { id } = req.params;
-    let { qty, price } = req.body;
-    let order = await OrdersModel.findByIdAndUpdate(id, { qty, price });
+    const { id } = req.params;
+    const { qty, price } = req.body;
+    const userId = req.user._id;
 
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+    // ✅ Fetch and check ownership
+    let order = await OrdersModel.findById(id);
+    if (!order || order.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized or order not found" });
     }
+
     const oldQty = order.qty;
     const oldPrice = order.price;
 
-    // Update order
+    // ✅ Update order fields manually
     order.qty = qty;
     order.price = price;
     await order.save();
 
-    // Now update Holdings
-    const holding = await HoldingsModel.findOne({ name: order.name });
-
+    // ✅ Fetch user's holding for the stock
+    const holding = await HoldingsModel.findOne({ name: order.name, userId });
     if (!holding) {
       return res.status(404).json({ message: "Related holding not found" });
     }
 
     if (order.model === "Buy") {
-      // Adjust qty and avg
       const totalQty = holding.qty - oldQty + qty;
-      const totalCost =
-        holding.avg * holding.qty - oldPrice * oldQty + price * qty;
+      const totalCost = holding.avg * holding.qty - oldPrice * oldQty + price * qty;
       const newAvg = totalCost / totalQty;
       const ltp = price;
       const currValue = ltp * totalQty;
@@ -413,25 +406,23 @@ app.put("/editOrder/:id", async (req, res) => {
       holding.isLoss = isLoss;
 
       await holding.save();
+
     } else if (order.model === "Sell") {
-      // Calculate what the new holding qty would become
       const newQty = holding.qty + oldQty - qty;
 
       if (newQty < 0) {
         return res.status(400).json({
-          message: `Invalid update: You cannot sell more than you currently hold. Holding: ${holding.qty}, Attempting to sell: ${qty}`,
+          message: `Invalid update: You cannot sell more than you hold. Holding: ${holding.qty}, Trying to sell: ${qty}`,
         });
       }
 
-      // Proceed with update
       if (newQty === 0) {
-        await HoldingsModel.deleteOne({ name: order.name });
+        await HoldingsModel.deleteOne({ _id: holding._id });
       } else {
         const ltp = price;
         const currValue = ltp * newQty;
         const totalInvestment = holding.avg * newQty;
-        const netChange =
-          ((currValue - totalInvestment) / totalInvestment) * 100;
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
         const net = `${netChange >= 0 ? "+" : ""}${netChange.toFixed(2)}%`;
         const isLoss = currValue < totalInvestment;
 
@@ -444,15 +435,18 @@ app.put("/editOrder/:id", async (req, res) => {
       }
     }
 
-    return res.status(200).json({ message: "Order and holding updated" });
+    return res.status(200).json({ message: "Order and holding updated successfully" });
+
   } catch (error) {
     console.error("Edit error:", error);
-    return res.status(500).json({ message: "Failed to edit order", error });
+    return res.status(500).json({ message: "Failed to edit order", error: error.message });
   }
 });
 
-app.delete("/deleteOrder/:id", async (req, res) => {
+
+app.delete("/deleteOrder/:id",userVerification,async (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id;
   try {
     const order = await OrdersModel.findById(id);
     if (!order) {
@@ -462,7 +456,7 @@ app.delete("/deleteOrder/:id", async (req, res) => {
 
     await OrdersModel.findByIdAndDelete(id);
 
-    let holding = await HoldingsModel.findOne({ name });
+    let holding = await HoldingsModel.findOne({ name, userId});
     if (!holding) {
       return res.status(200).send({ message: "Order deleted. No holding found." });
     }
@@ -473,7 +467,7 @@ app.delete("/deleteOrder/:id", async (req, res) => {
       const newQty = holding.qty - qty;
 
       if (newQty <= 0) {
-        await HoldingsModel.deleteOne({ name });
+        await HoldingsModel.deleteOne({ name,userId });
       } else {
         const newAvg = (totalCost - removedCost) / newQty;
         holding.qty = newQty;

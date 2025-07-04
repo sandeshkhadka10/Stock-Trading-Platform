@@ -21,9 +21,13 @@ const BuyActionWindow = ({ uid }) => {
         qty: data.qty,
         price: data.price,
         model: "Buy",
+      },{
+        withCredentials:true
       })
       .then(() => {
-        axios.get("http://localhost:3002/allHoldings").then((res) => {
+        axios.get("http://localhost:3002/allHoldings",{
+          withCredentials:true
+        }).then((res) => {
           setAllHoldings(res.data);
         });
       });

@@ -9,6 +9,11 @@ const OrdersSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "Users",
+    required: true,
+  },
 });
 
 module.exports = { OrdersSchema };
