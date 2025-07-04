@@ -368,8 +368,7 @@ app.put("/editOrder/:id", userVerification, async (req, res) => {
     const { id } = req.params;
     const { qty, price } = req.body;
     const userId = req.user._id;
-
-    // ✅ Fetch and check ownership
+    
     let order = await OrdersModel.findById(id);
     if (!order || order.userId.toString() !== userId.toString()) {
       return res.status(403).json({ message: "Unauthorized or order not found" });
@@ -378,12 +377,10 @@ app.put("/editOrder/:id", userVerification, async (req, res) => {
     const oldQty = order.qty;
     const oldPrice = order.price;
 
-    // ✅ Update order fields manually
     order.qty = qty;
     order.price = price;
     await order.save();
 
-    // ✅ Fetch user's holding for the stock
     const holding = await HoldingsModel.findOne({ name: order.name, userId });
     if (!holding) {
       return res.status(404).json({ message: "Related holding not found" });
