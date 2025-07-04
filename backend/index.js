@@ -213,10 +213,9 @@ app.get("/allHoldings",userVerification,async (req, res) => {
 });
 
 // getting all the positions values from the database
-app.get("/allPositions",userVerification, async (req, res) => {
+app.get("/allPositions",async (req, res) => {
   try{
-    let userId = req.user._id;
-    let allPositions = await PositionsModel.find({userId});
+    let allPositions = await PositionsModel.find({});
     res.json(allPositions);
   }catch(err){
     res.status(500).json({message:"Server Error"});
