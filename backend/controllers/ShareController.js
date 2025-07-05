@@ -21,6 +21,128 @@ module.exports.AllPositions = async (req, res) => {
   }
 };
 
+module.exports.NewOrder = async (req, res) => {
+  const { name, qty, price, model } = req.body;
+  const userId = req.user._id;
+
+  if (model === "Buy") {
+    try {
+      await OrdersModel.create({ name, qty, price, model, userId });
+
+      let existing = await HoldingsModel.findOne({ name, userId });
+
+      const newQty = Number(qty);
+      const newPrice = Number(price);
+
+      if (existing) {
+        const totalQty = existing.qty + newQty;
+        const totalCost = existing.avg * existing.qty + newPrice * newQty;
+        const newAvg = totalCost / totalQty;
+
+        const ltp = newPrice;
+        const currValue = ltp * totalQty;
+        const isLoss = currValue < totalCost;
+        const netChange = ((currValue - totalCost) / totalCost) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+
+        existing.qty = totalQty;
+        existing.avg = newAvg;
+        existing.price = ltp;
+        existing.net = net;
+        existing.isLoss = isLoss;
+
+        await existing.save();
+
+        return res
+          .status(200)
+          .json({ message: "Order placed and holdings updated" });
+      } else {
+        const avg = newPrice;
+        const ltp = newPrice;
+        const currValue = ltp * newQty;
+        const totalInvestment = avg * newQty;
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+        const isLoss = currValue < totalInvestment;
+
+        await HoldingsModel.create({
+          name,
+          qty: newQty,
+          avg,
+          price: ltp,
+          net,
+          day: "+0.00%",
+          isLoss,
+          userId,
+        });
+
+        return res.status(201).json({ message: "New holding created" });
+      }
+    } catch (error) {
+      console.error("Error processing order:", error);
+      return res.status(500).json({
+        message: "Error processing order",
+        error: error.message,
+      });
+    }
+  } else if (model === "Sell") {
+    try {
+      let existing = await HoldingsModel.findOne({ name, userId });
+
+      if (!existing) {
+        return res.status(400).json({ message: "You don't own this stock" });
+      }
+
+      const sellQty = Number(qty);
+      const sellPrice = Number(price);
+
+      if (existing.qty < sellQty) {
+        return res.status(400).json({
+          message: `Insufficient quantity. You own ${existing.qty} shares but trying to sell ${sellQty}`,
+        });
+      }
+
+      await OrdersModel.create({ name, qty: sellQty, price: sellPrice, model, userId });
+
+      const remainingQty = existing.qty - sellQty;
+
+      if (remainingQty === 0) {
+        await HoldingsModel.deleteOne({ _id: existing._id });
+        return res.status(200).json({ message: "All shares sold. Holding removed" });
+      } else {
+        const ltp = sellPrice;
+        const currValue = ltp * remainingQty;
+        const totalInvestment = existing.avg * remainingQty;
+        const netChange = ((currValue - totalInvestment) / totalInvestment) * 100;
+        const sign = netChange >= 0 ? "+" : "-";
+        const net = `${sign}${netChange.toFixed(2)}%`;
+        const isLoss = currValue < totalInvestment;
+
+        existing.qty = remainingQty;
+        existing.price = ltp;
+        existing.net = net;
+        existing.isLoss = isLoss;
+
+        await existing.save();
+
+        return res.status(200).json({
+          message: `${sellQty} shares sold successfully. ${remainingQty} shares remaining.`,
+        });
+      }
+    } catch (error) {
+      console.error("Error processing order: ", error);
+      return res.status(500).json({
+        message: "Error processing order",
+        error: error.message,
+      });
+    }
+  } else {
+    return res.status(400).json({ message: "Invalid order model. Use 'Buy' or 'Sell'" });
+  }
+};
+
 module.exports.AllOrders = async (req, res) => {
   try{
     const userId = req.user._id;

@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {AllHoldings,AllPositions,AllOrders, GetOrder, EditOrder, DeleteOrder} = require("../controllers/ShareController");
+const {AllHoldings,AllPositions,AllOrders, GetOrder, EditOrder, DeleteOrder, NewOrder} = require("../controllers/ShareController");
 const { userVerification } = require("../middlewares/AuthMiddleware");
-
 
 router.get("/allHoldings",userVerification,AllHoldings);
 
 router.get("/allPositions",AllPositions);
+
+router.post("/newOrder", userVerification, NewOrder);
 
 router.get("/allOrders",userVerification,AllOrders);
 
