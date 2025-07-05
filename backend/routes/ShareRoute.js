@@ -1,0 +1,19 @@
+const express = require("express");
+const router = express.Router();
+const {AllHoldings,AllPositions,AllOrders, GetOrder, EditOrder, DeleteOrder} = require("../controllers/ShareController");
+const { userVerification } = require("../middlewares/AuthMiddleware");
+
+
+router.get("/allHoldings",userVerification,AllHoldings);
+
+router.get("/allPositions",AllPositions);
+
+router.get("/allOrders",userVerification,AllOrders);
+
+router.get("/getOrder/:id",userVerification,GetOrder);
+
+router.put("/editOrder/:id", userVerification,EditOrder);
+
+router.delete("/deleteOrder/:id",userVerification,DeleteOrder);
+
+module.exports = router;
