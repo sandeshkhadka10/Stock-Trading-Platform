@@ -1,13 +1,33 @@
 const {Schema} = require("mongoose");
 
 const HoldingsSchema = new Schema({
-    name: String,
-    qty: Number,
-    avg: Number,
-    price: Number,
-    net: String,
-    day: String,
-    isLoss: Boolean,
+    name: {
+        type:String,
+        required:true
+    },
+    qty: {
+        type:Number,
+        required:true
+    },
+    avg: {
+        type:Number,
+        required:true
+    },
+    price: {
+        type:Number,
+        required:true
+    },
+    net: {
+        type:String,
+        required:true  
+    },
+    day: {type:String,
+        required:true,
+    },
+    isLoss:{
+        type:Boolean,
+        required:true
+    },
     userId:{
         type:Schema.Types.ObjectId,
         ref:"Users",
