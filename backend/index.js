@@ -26,15 +26,15 @@ app.use(cookieParser());
 app.use("/",authRoute);
 app.use("/",shareRoute);
 
-// app.all("*",(req,res,next)=>{
-//   next(new ExpressError(404,"Page not found!"));
-// });
+app.all("/*splat",(req,res,next)=>{
+  next(new ExpressError(404,"Page not found!"));
+});
 
-// // custom error handler
-// app.use((err, req, res, next) => {
-//   let { status = 500, message = "Something went wrong" } = err;
-//   res.status(status).json({ error: message });
-// });
+// custom error handler
+app.use((err, req, res, next) => {
+  let { status = 500, message = "Something went wrong" } = err;
+  res.status(status).json({ error: message });
+});
 
 app.listen(3002, () => {
   console.log("App started!");
