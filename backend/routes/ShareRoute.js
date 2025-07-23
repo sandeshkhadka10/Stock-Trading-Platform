@@ -7,7 +7,7 @@ router.get("/allHoldings",userVerification,AllHoldings);
 
 router.get("/allPositions",AllPositions);
 
-router.post("/newOrder", userVerification, NewOrder);
+router.post("/newOrder", userVerification,NewOrder);
 
 router.get("/allOrders",userVerification,AllOrders);
 

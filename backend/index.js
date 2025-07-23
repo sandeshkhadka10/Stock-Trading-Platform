@@ -14,22 +14,33 @@ const cors = require("cors");
 const cookieParser  = require("cookie-parser");
 const authRoute = require("./routes/AuthRoute");
 const shareRoute = require("./routes/ShareRoute");
+const ExpressError = require("./util/ExpressError");
+
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow both ports
+  credentials: true
+}));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+app.use("/",authRoute);
+app.use("/",shareRoute);
+
+// app.all("*",(req,res,next)=>{
+//   next(new ExpressError(404,"Page not found!"));
+// });
+
+// // custom error handler
+// app.use((err, req, res, next) => {
+//   let { status = 500, message = "Something went wrong" } = err;
+//   res.status(status).json({ error: message });
+// });
 
 app.listen(3002, () => {
   console.log("App started!");
   mongoose.connect(url);
   console.log("Database connected");
 });
-
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow both ports
-  credentials: true
-}));
-
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use("/",authRoute);
-app.use("/",shareRoute);
 
 
 // adding the dummy data for holdings in the database
