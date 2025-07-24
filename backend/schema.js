@@ -14,7 +14,7 @@ module.exports.usersLoginSchema = Joi.object({
 });
 
 // for orders
-module.exports.newOrdersSchema = Joi.object({
+module.exports.ordersSchema = Joi.object({
     name: Joi.string().required(),
     qty: Joi.number().required().min(1),
     price: Joi.number().required(),
