@@ -67,7 +67,7 @@ const Signup = () => {
                 })}
               />
               {errors.username && (
-                <p className="text-danger">{errors.username.message}</p>
+                <p className="text-danger fs-6">{errors.username.message}</p>
               )}
             </div>
 
@@ -88,7 +88,7 @@ const Signup = () => {
                 })}
               />
               {errors.email && (
-                <p className="text-danger">{errors.email.message}</p>
+                <p className="text-danger fs-6">{errors.email.message}</p>
               )}
             </div>
             
@@ -109,7 +109,7 @@ const Signup = () => {
                 })}
               />
               {errors.password && (
-                <p className="text-danger">{errors.password.message}</p>
+                <p className="text-danger fs-6">{errors.password.message}</p>
               )}
             </div>
 

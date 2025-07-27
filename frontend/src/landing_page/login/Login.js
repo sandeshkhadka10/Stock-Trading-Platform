@@ -87,7 +87,7 @@ const Login = () => {
                 })}
               ></input>
               {errors.email && (
-                <p className="text-danger">{errors.email.message}</p>
+                <p className="text-danger fs-6">{errors.email.message}</p>
               )}
             </div>
             <div className="mb-3 fs-5">
@@ -107,7 +107,7 @@ const Login = () => {
                 })}
               ></input>
               {errors.password && (
-                <p className="text-danger">{errors.password.message}</p>
+                <p className="text-danger fs-6">{errors.password.message}</p>
               )}
             </div>
 
