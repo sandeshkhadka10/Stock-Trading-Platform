@@ -14,6 +14,7 @@ import NotFound from "./landing_page/NotFound";
 import Login from "./landing_page/login/Login";
 import { AuthProvider } from "./landing_page/context/AuthContext";
 import ForgetPassword from "./landing_page/forgetPassword/forgetPassword";
+import ResetPassword from "./landing_page/resetPassword/resetPassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,6 +26,7 @@ root.render(
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/ForgetPassword" element={<ForgetPassword/>}/>
+        <Route path="/ResetPassword" element={<ResetPassword/>}/>
         <Route path="/about" element={<AboutPage />} />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/pricing" element={<PricingPage />} />
