@@ -119,6 +119,10 @@ const Login = () => {
             <div className="text-center mt-2">
                 <span>Already have an account? <Link to={"/signup"}>Signup</Link></span>
             </div>
+
+            <div className="text-center mt-2">
+                <span>Forget Password? <Link to={"/ForgetPassword"}>Forget Password</Link></span>
+            </div>
           </form>
         </div>
       </div>

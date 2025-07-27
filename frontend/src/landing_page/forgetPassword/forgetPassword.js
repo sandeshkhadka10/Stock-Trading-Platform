@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-const resetPassword = () => {
+const ForgetPassword = () => {
     const {
         register,
         handleSubmit,
@@ -26,13 +26,17 @@ return(
                                 required:"Email is required"
                             })
                         }/>
-                        {errors.email && (<p className="text-danger">{errors.email.message}</p>)}
+                        {errors.email && (<p className="text-danger fs-6">{errors.email.message}</p>)}
                     </div>
-
+                    <div>
+                        <button type="submit">Send Reset Code</button>
+                    </div>
                 </form>
             </div>
 
         </div>
     </div>
-)
-}
+);
+};
+
+export default ForgetPassword;
