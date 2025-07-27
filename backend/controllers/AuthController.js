@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     service:"gmail",
     auth:{
         user:process.env.EMAIL_USER,
-        password:process.env.EMAIL_PASSWORD
+        pass:process.env.EMAIL_PASSWORD
     }
 });
 
@@ -79,7 +79,7 @@ module.exports.forgetPassword = async(req,res) =>{
         res.status(200).json({message: "Reset code send to your email"});
     }catch(error){
         console.error("Email send error:",error);
-        res.status(500).json({message: "Failed to send reset coed"});
+        res.status(500).json({message: "Failed to send reset code"});
     }
 };
 
