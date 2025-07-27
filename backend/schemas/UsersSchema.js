@@ -18,6 +18,12 @@ const UsersSchema = new Schema({
     createdAt:{
         type:Date,
         default:new Date()
+    },
+    resetCode:{
+        type:String
+    },
+    resetCodeExpires:{
+        type:Date
     }
 });
 
