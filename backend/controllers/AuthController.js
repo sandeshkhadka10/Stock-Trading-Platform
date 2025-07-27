@@ -64,7 +64,7 @@ module.exports.forgetPassword = async(req,res) =>{
     const expires = new Date(Date.now() + 10 * 60 * 1000);
 
     existingUser.resetCode = resetCode;
-    existingUser.expires = expires;
+    existingUser.resetCodeExpires = expires;
     await existingUser.save();
 
     // Email sending
@@ -81,4 +81,25 @@ module.exports.forgetPassword = async(req,res) =>{
         console.error("Email send error:",error);
         res.status(500).json({message: "Failed to send reset coed"});
     }
+};
+
+module.exports.resetPassword = async(req,res)=>{
+    const {email,resetCode, newPassword} = req.body;
+    const existingUser = await UsersModel.findOne({email});
+
+    if(!existingUser || existingUser.resetCode !== resetCode){
+        return res.status(400).json({message:"Invalid code or email"});
+    }
+
+    if(Date.now() > existingUser.resetCodeExpires){
+        return res.status(400).json({message:"Reset Code expired"});
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword,10);
+    existingUser.password = hashedPassword;
+    existingUser.resetCode = undefined;
+    existingUser.resetCodeExpires = undefined;
+    await existingUser.save();
+
+    return res.status(200).json({message:"Password reset successfully"});
 }

@@ -1,5 +1,5 @@
 const express = require("express");
-const {Signup,Login,Logout,forgetPassword} = require("../controllers/AuthController");
+const {Signup,Login,Logout,forgetPassword,resetPassword} = require("../controllers/AuthController");
 const { userVerification } = require("../middlewares/AuthMiddleware");
 const {validateSignup,validateLogin} = require("../middlewares/ValidationMiddleware");
 const router = express.Router();
@@ -9,6 +9,7 @@ router.post("/signup",validateSignup,wrapAsync(Signup));
 router.post("/login",validateLogin,wrapAsync(Login));
 router.get("/logout",Logout);
 router.post("/forgetPassword",forgetPassword);
+router.post("/resetPassword",resetPassword);
 
 
 router.get("/user",userVerification,(req,res)=>{
