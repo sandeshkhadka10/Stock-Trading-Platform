@@ -16,20 +16,26 @@ const BuyActionWindow = ({ uid }) => {
 
   const onSubmitHandler = (data) => {
     axios
-      .post("http://localhost:3002/newOrder", {
-        name: uid,
-        qty: data.qty,
-        price: data.price,
-        model: "Buy",
-      },{
-        withCredentials:true
-      })
+      .post(
+        "http://localhost:3002/newOrder",
+        {
+          name: uid,
+          qty: data.qty,
+          price: data.price,
+          model: "Buy",
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then(() => {
-        axios.get("http://localhost:3002/allHoldings",{
-          withCredentials:true
-        }).then((res) => {
-          setAllHoldings(res.data);
-        });
+        axios
+          .get("http://localhost:3002/allHoldings", {
+            withCredentials: true,
+          })
+          .then((res) => {
+            setAllHoldings(res.data);
+          });
       });
     generalContext.closeBuyWindow();
   };
@@ -54,8 +60,8 @@ const BuyActionWindow = ({ uid }) => {
                   required: "Quantity is required",
                   min: {
                     value: 1,
-                    message: "Minimum quantity is 1"
-                  }
+                    message: "Minimum quantity is 1",
+                  },
                 })}
               />
               <span style={{ color: "red" }}>
@@ -65,17 +71,17 @@ const BuyActionWindow = ({ uid }) => {
 
             <fieldset>
               <legend>Price</legend>
-              <input 
-                type="number" 
-                name="price" 
-                id="price" 
+              <input
+                type="number"
+                name="price"
+                id="price"
                 placeholder="Rs 1500"
-                {...register("price",{
-                  required:"Price is required",
-                  min:{
-                    value:100,
-                    message:"Minimum price is Rs 100"
-                  }
+                {...register("price", {
+                  required: "Price is required",
+                  min: {
+                    value: 100,
+                    message: "Minimum price is Rs 100",
+                  },
                 })}
               />
               <span style={{ color: "red" }}>
@@ -88,14 +94,18 @@ const BuyActionWindow = ({ uid }) => {
         <div className="buttons">
           <span>Margin required ₹140.65</span>
           <div>
-            <button type="submit" className="btn btn-blue" style={{border:"none"}}>
+            <button
+              type="submit"
+              className="btn btn-blue"
+              style={{ border: "none" }}
+            >
               Buy
             </button>
-            <button 
-              type="button" 
-              className="btn btn-grey" 
+            <button
+              type="button"
+              className="btn btn-grey"
               onClick={handleCancelClick}
-              style={{border:"none"}}
+              style={{ border: "none" }}
             >
               Cancel
             </button>

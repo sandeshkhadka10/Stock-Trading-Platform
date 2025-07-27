@@ -72,7 +72,7 @@ const EditActionWindow = ({ uid }) => {
                   }
                 })}
               />
-              <span>{errors.qty && <p>{errors.qty.message}</p>}</span>
+              <span style={{ color: "red" }}>{errors.qty && <p>{errors.qty.message}</p>}</span>
             </fieldset>
             <fieldset>
               <legend>Price</legend>
@@ -89,7 +89,7 @@ const EditActionWindow = ({ uid }) => {
                   }
                 })}
               />
-              <span>{errors.price && <p>{errors.price.message}</p>}</span>
+              <span style={{ color: "red" }}>{errors.price && <p>{errors.price.message}</p>}</span>
             </fieldset>
           </div>
         </div>

@@ -60,7 +60,7 @@ const SellActionWindow = ({ uid }) => {
                   }
                 })}
               />
-              <div>{errors.qty && <p>{errors.qty.message}</p>}</div>
+              <span style={{ color: "red" }}>{errors.qty && <p>{errors.qty.message}</p>}</span>
             </fieldset>
             <fieldset>
               <legend>Price</legend>
@@ -78,7 +78,7 @@ const SellActionWindow = ({ uid }) => {
                   }
                 })}
               />
-              <div>{errors.price && <p>{errors.price.message}</p>}</div>
+              <span style={{ color: "red" }}>{errors.price && <p>{errors.price.message}</p>}</span>
             </fieldset>
           </div>
         </div>
