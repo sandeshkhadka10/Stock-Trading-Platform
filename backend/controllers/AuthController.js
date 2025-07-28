@@ -18,11 +18,20 @@ module.exports.Signup = async(req,res,next) => {
         if(existingUser){
             return res.json({message:"User already exists"});
         }
-        const noneExistingUser = await UsersModel.create({username,email,password,createdAt});
+        const hashedPassword = await bcrypt.hash(password,10);
+
+        const noneExistingUser = await UsersModel.create({
+            username,
+            email,
+            password:hashedPassword,
+            createdAt
+        });
+
         const token = createSecretToken(noneExistingUser._id);
         res.cookie("token",token,{
             httpOnly:true,
         });
+
         res.status(201).json({message:"User signed in successfully", success: true, noneExistingUser});
         // next();
 };
@@ -83,23 +92,26 @@ module.exports.forgetPassword = async(req,res) =>{
     }
 };
 
-module.exports.resetPassword = async(req,res)=>{
-    const {email,resetCode, newPassword} = req.body;
-    const existingUser = await UsersModel.findOne({email});
+module.exports.resetPassword = async (req, res) => {
+  const { email, resetCode, newPassword } = req.body;
+  const existingUser = await UsersModel.findOne({ email });
 
-    if(!existingUser || existingUser.resetCode !== resetCode){
-        return res.status(400).json({message:"Invalid code or email"});
-    }
+  if (
+    !existingUser ||
+    String(existingUser.resetCode).trim() !== String(resetCode).trim()
+  ) {
+    return res.status(400).json({ message: "Invalid code or email" });
+  }
 
-    if(Date.now() > existingUser.resetCodeExpires){
-        return res.status(400).json({message:"Reset Code expired"});
-    }
+  if (Date.now() > new Date(existingUser.resetCodeExpires).getTime()) {
+    return res.status(400).json({ message: "Reset Code expired" });
+  }
 
-    const hashedPassword = await bcrypt.hash(newPassword,10);
-    existingUser.password = hashedPassword;
-    existingUser.resetCode = undefined;
-    existingUser.resetCodeExpires = undefined;
-    await existingUser.save();
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  existingUser.password = hashedPassword;
+  existingUser.resetCode = undefined;
+  existingUser.resetCodeExpires = undefined;
+  await existingUser.save();
 
-    return res.status(200).json({message:"Password reset successfully"});
-}
+  return res.status(200).json({ message: "Password reset successfully" });
+};
