@@ -39,7 +39,7 @@ const ResetPassword = () => {
         }, 2000);
       }
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || "Failed To Reset Password";
+      const errorMessage = "Failed To Reset Password";
       handleError(errorMessage);
     }
   };
