@@ -19,9 +19,8 @@ const BuyActionWindow = ({ uid }) => {
       .post(
         "http://localhost:3002/newOrder",
         {
+          ...data,
           name: uid,
-          qty: data.qty,
-          price: data.price,
           model: "Buy",
         },
         {
@@ -53,8 +52,6 @@ const BuyActionWindow = ({ uid }) => {
               <legend>Qty.</legend>
               <input
                 type="number"
-                name="qty"
-                id="qty"
                 placeholder="1"
                 {...register("qty", {
                   required: "Quantity is required",
@@ -73,8 +70,6 @@ const BuyActionWindow = ({ uid }) => {
               <legend>Price</legend>
               <input
                 type="number"
-                name="price"
-                id="price"
                 placeholder="Rs 1500"
                 {...register("price", {
                   required: "Price is required",
