@@ -78,7 +78,7 @@ module.exports.forgetPassword = async (req, res) => {
     return res.status(404).json({ message: "User doesn't exist" });
   }
   const resetCode = Math.floor(10000 + Math.random() * 90000).toString();
-  const expires = new Date(Date.now() + 10 * 60 * 1000);
+  const expires = new Date(Date.now() + 1 * 60 * 1000);
 
   existingUser.resetCode = resetCode;
   existingUser.resetCodeExpires = expires;
@@ -89,7 +89,7 @@ module.exports.forgetPassword = async (req, res) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Password Reset Code",
-    text: `Your password reset code is: ${resetCode}.It will expire in 10 Minutes`,
+    text: `Your password reset code is: ${resetCode}.It will expire in 1 Minutes`,
   };
   try {
     await transporter.sendMail(mailOptions);

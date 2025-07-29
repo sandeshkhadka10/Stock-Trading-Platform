@@ -30,8 +30,8 @@ const ResetPassword = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:3002/resetPassword", data);
-      if (response.data.success) {
-        handleSuccess(response.data.message || "Password Reset Successfully");
+      if (response.status === 200) {
+        handleSuccess(response.data.message || "Reset Code Sent");
         reset();
         
         setTimeout(() => {
