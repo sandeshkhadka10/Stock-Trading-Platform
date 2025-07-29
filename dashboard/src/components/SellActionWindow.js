@@ -3,6 +3,8 @@ import "./SellActionWindow.css";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
 import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SellActionWindow = ({ uid }) => {
   // const [stockQuantity, setStockQuantity] = useState(1);
@@ -14,26 +16,53 @@ const SellActionWindow = ({ uid }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
-  const onSubmitHandler = (data) => {
-    axios
-      .post("http://localhost:3002/newOrder", {
-        name: uid,
-        qty: data.qty,
-        price: data.price,
-        model: "Sell",
-      },{
-        withCredentials:true
-      })
-      .then(() => {
-        axios.get("http://localhost:3002/allHoldings",{
-          withCredentials:true
-        }).then((res) => {
-          setAllHoldings(res.data);
+  const onSubmitHandler = async (data) => {
+    try {
+      const sellRes = await axios
+      .post(
+        "http://localhost:3002/newOrder",
+        {
+          name: uid,
+          ...data,
+          model: "Sell",
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (sellRes.status === 200 || sellRes.status === 201) {
+        toast.success(sellRes.data.message || "Order placed successfully", {
+          position: "top-right",
+          autoClose: 2500,
         });
+
+        // Optional: update holdings
+        const res = await axios.get("http://localhost:3002/allHoldings", {
+          withCredentials: true,
+        });
+        setAllHoldings(res.data);
+
+        // Reset form fields
+        reset();
+
+        // Close buy window after delay so user sees toast
+        setTimeout(() => {
+          generalContext.closeSellWindow();
+        }, 1200);
+      }
+
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to place order. Try again.";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
       });
-    generalContext.closeSellWindow();
+    }
   };
 
   const handleCancelClick = () => {
@@ -42,6 +71,7 @@ const SellActionWindow = ({ uid }) => {
 
   return (
     <div className="container" id="buy-window" draggable="true">
+      <ToastContainer/>
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <div className="regular-order">
           <div className="inputs">
@@ -49,36 +79,36 @@ const SellActionWindow = ({ uid }) => {
               <legend>Qty.</legend>
               <input
                 type="number"
-                name="qty"
-                id="qty"
                 placeholder="1"
-                {...register("qty",{
-                  required:"Quantity is required",
-                  min:{
-                    value:1,
-                    message:"Minimum quantity"
-                  }
+                {...register("qty", {
+                  required: "Quantity is required",
+                  min: {
+                    value: 1,
+                    message: "Minimum quantity",
+                  },
                 })}
               />
-              <span style={{ color: "red", fontSize:"0.7rem" }}>{errors.qty && <p>{errors.qty.message}</p>}</span>
+              <span style={{ color: "red", fontSize: "0.7rem" }}>
+                {errors.qty && <p>{errors.qty.message}</p>}
+              </span>
             </fieldset>
             <fieldset>
               <legend>Price</legend>
               <input
                 type="number"
-                name="price"
-                id="price"
                 step="0.05"
                 placeholder="Rs 1500"
-                {...register("price",{
-                  required:"Price is required",
-                  min:{
-                    value:100,
-                    message:"Minimum price is Rs 100"
-                  }
+                {...register("price", {
+                  required: "Price is required",
+                  min: {
+                    value: 100,
+                    message: "Minimum price is Rs 100",
+                  },
                 })}
               />
-              <span style={{ color: "red", fontSize:"0.7rem" }}>{errors.price && <p>{errors.price.message}</p>}</span>
+              <span style={{ color: "red", fontSize: "0.7rem" }}>
+                {errors.price && <p>{errors.price.message}</p>}
+              </span>
             </fieldset>
           </div>
         </div>
@@ -86,10 +116,14 @@ const SellActionWindow = ({ uid }) => {
         <div className="buttons">
           <span>Margin required ₹140.65</span>
           <div>
-            <button className="btn btn-blue" style={{border:"none"}}>
+            <button className="btn btn-blue" style={{ border: "none" }}>
               Sell
             </button>
-            <button to="" className="btn btn-grey" onClick={handleCancelClick} style={{border:"none"}}>
+            <button
+              className="btn btn-grey"
+              onClick={handleCancelClick}
+              style={{ border: "none" }}
+            >
               Cancel
             </button>
           </div>
