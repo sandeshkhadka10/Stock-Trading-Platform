@@ -33,19 +33,17 @@ const ForgetPassword = () => {
         "http://localhost:3002/forgetPassword",
         data
       );
-      if (
-        response.status === 200
-      ) {
-        handleSuccess(response.data.message || "Reset Code Sent");
+      if (response.status === 200) {
+        handleSuccess("Reset Code Sent");
         reset();
 
         setTimeout(() => {
           navigate("/ResetPassword");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       const errorMessage =
-        error?.response?.data?.message || "Failed To Send Reset Code";
+        "Failed To Send Reset Code";
       handleError(errorMessage);
     }
   };

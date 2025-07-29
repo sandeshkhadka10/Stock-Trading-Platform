@@ -30,13 +30,13 @@ const ResetPassword = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:3002/resetPassword", data);
-      if (response.status === 200) {
-        handleSuccess(response.data.message || "Reset Code Sent");
+      if (response.status == 200) {
+        handleSuccess("Password Reset Successfully");
         reset();
         
         setTimeout(() => {
           navigate("/login");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       const errorMessage = error?.response?.data?.message || "Failed To Reset Password";
@@ -78,13 +78,13 @@ const ResetPassword = () => {
               {errors.resetCode && (<p className="text-danger fs-6">{errors.resetCode.message}</p>)}
             </div>
             <div className="mb-3 fs-6">
-              <label htmlFor="password" className="form-label">New Password</label>
+              <label htmlFor="newPassword" className="form-label">New Password</label>
               <input 
                 type="password" 
-                id="password" 
+                id="newPassword" 
                 placeholder="Enter your new password" 
                 className="form-control" 
-                {...register("password", {
+                {...register("newPassword", {
                   required: "Password is required"
                 })}
               />
