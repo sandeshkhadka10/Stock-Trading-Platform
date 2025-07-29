@@ -3,6 +3,8 @@ import "./BuyActionWindow.css";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
 import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BuyActionWindow = ({ uid }) => {
   const [allHoldings, setAllHoldings] = useState([]);
@@ -12,31 +14,49 @@ const BuyActionWindow = ({ uid }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
-  const onSubmitHandler = (data) => {
-    axios
-      .post(
+  const onSubmitHandler = async (data) => {
+    try {
+      const orderRes = await axios.post(
         "http://localhost:3002/newOrder",
         {
-          ...data,
           name: uid,
+          ...data,
           model: "Buy",
         },
-        {
+        { withCredentials: true }
+      );
+
+      if (orderRes.status === 200 || orderRes.status === 201) {
+        toast.success(orderRes.data.message || "Order placed successfully", {
+          position: "top-right",
+          autoClose: 2500,
+        });
+
+        // Optional: update holdings
+        const res = await axios.get("http://localhost:3002/allHoldings", {
           withCredentials: true,
-        }
-      )
-      .then(() => {
-        axios
-          .get("http://localhost:3002/allHoldings", {
-            withCredentials: true,
-          })
-          .then((res) => {
-            setAllHoldings(res.data);
-          });
+        });
+        setAllHoldings(res.data);
+
+        // Reset form fields
+        reset();
+
+        // Close buy window after delay so user sees toast
+        setTimeout(() => {
+          generalContext.closeBuyWindow();
+        }, 1200);
+      }
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to place order. Try again.";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
       });
-    generalContext.closeBuyWindow();
+    }
   };
 
   const handleCancelClick = () => {
@@ -45,6 +65,7 @@ const BuyActionWindow = ({ uid }) => {
 
   return (
     <div className="container" id="buy-window" draggable="true">
+      <ToastContainer />
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <div className="regular-order">
           <div className="inputs">
@@ -61,7 +82,7 @@ const BuyActionWindow = ({ uid }) => {
                   },
                 })}
               />
-              <span style={{ color: "red", fontSize:"0.7rem" }}>
+              <span style={{ color: "red", fontSize: "0.7rem" }}>
                 {errors.qty && <p>{errors.qty.message}</p>}
               </span>
             </fieldset>
@@ -79,8 +100,8 @@ const BuyActionWindow = ({ uid }) => {
                   },
                 })}
               />
-              <span style={{ color: "red", fontSize:"0.7rem"}}>
-                {errors.price && <p className="fs-6">{errors.price.message}</p>}
+              <span style={{ color: "red", fontSize: "0.7rem" }}>
+                {errors.price && <p>{errors.price.message}</p>}
               </span>
             </fieldset>
           </div>

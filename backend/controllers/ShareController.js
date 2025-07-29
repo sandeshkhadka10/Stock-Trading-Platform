@@ -50,7 +50,7 @@ module.exports.NewOrder = async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "Order placed and holdings updated" });
+        .json({ message: "Share Bought and holdings updated" });
     } else {
       const avg = newPrice;
       const ltp = newPrice;
@@ -72,7 +72,7 @@ module.exports.NewOrder = async (req, res) => {
         userId,
       });
 
-      return res.status(201).json({ message: "New holding created" });
+      return res.status(201).json({ message: "Share Bought" });
     }
   } else if (model === "Sell") {
     let existing = await HoldingsModel.findOne({ name, userId });
@@ -104,7 +104,7 @@ module.exports.NewOrder = async (req, res) => {
       await HoldingsModel.deleteOne({ _id: existing._id });
       return res
         .status(200)
-        .json({ message: "All shares sold. Holding removed" });
+        .json({ message: "All shares sold. Removed From Holding" });
     } else {
       const ltp = sellPrice;
       const currValue = ltp * remainingQty;
@@ -150,8 +150,11 @@ module.exports.EditOrder = async (req, res) => {
   const userId = req.user._id;
 
   let order = await OrdersModel.findById(id);
-  if (!order || order.userId.toString() !== userId.toString()) {
-    return res.status(403).json({ message: "Unauthorized or order not found" });
+  if (!order) {
+    return res.status(403).json({ message: "Order not found" });
+  }
+  if(order.userId.toString() !== userId.toString()){
+     return res.status(403).json({ message: "Unauthorized user" });
   }
 
   const oldQty = order.qty;
@@ -255,5 +258,5 @@ module.exports.DeleteOrder = async (req, res) => {
     await holding.save();
   }
 
-  res.status(200).send({ message: "Order and holdings updated" });
+  res.status(200).send({ message: "Order Canceled and Holdings updated" });
 };
