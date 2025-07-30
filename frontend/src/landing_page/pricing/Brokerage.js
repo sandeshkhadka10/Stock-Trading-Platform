@@ -3,14 +3,17 @@ import React from "react";
 function Brokerage() {
   return (
     <div className="container">
-      <div className="row mt-5 p-5 text-center border-top">
-        <div className="col-8 p-4">
-          <a href="" style={{ textDecoration: "none" }}>
+      <div className="row mt-5 p-3 p-md-5 text-center border-top">
+        <div className="col-12 col-md-8 p-3 p-md-4">
+          <a href="#" style={{ textDecoration: "none" }}>
             <h3 className="fs-5">Brokerage calculator</h3>
           </a>
-          <ul style={{textAlign:"left", lineHeight:"2.5", fontSize:"13px"}} className="text-muted">
+          <ul
+            style={{ textAlign: "left", lineHeight: "2.2", fontSize: "13px" }}
+            className="text-muted"
+          >
             <li>
-              Call & Trade and RMS auto-squareoff:Additional charges of ₹50 +
+              Call & Trade and RMS auto-squareoff: Additional charges of ₹50 +
               GST per order.
             </li>
             <li>Digital contract notes will be sent via e-mail.</li>
@@ -32,8 +35,9 @@ function Brokerage() {
             </li>
           </ul>
         </div>
-        <div className="col-4 p-4">
-          <a href="" style={{ textDecoration: "none" }}>
+
+        <div className="col-12 col-md-4 p-3 p-md-4 mt-4 mt-md-0">
+          <a href="#" style={{ textDecoration: "none" }}>
             <h3 className="fs-5">List of charges</h3>
           </a>
         </div>

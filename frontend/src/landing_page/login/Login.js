@@ -30,7 +30,6 @@ const Login = () => {
 
         reset();
 
-        // fetch the user info to update context
         const userInfo = await axios.get("http://localhost:3002/user", {
           withCredentials: true,
         });
@@ -59,12 +58,12 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ width: "30%" }}>
+    <div className="container py-5">
       <ToastContainer />
-      <div className="row">
-        <div className="col">
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-8 col-lg-6 col-xl-4">
           <h4 className="text-center mt-3">Login Now</h4>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
             <div className="mb-3 fs-6">
               <label htmlFor="email" className="form-label">
                 Email
@@ -80,7 +79,7 @@ const Login = () => {
                     message: "Invalid email format",
                   },
                 })}
-              ></input>
+              />
               {errors.email && (
                 <p className="text-danger fs-6">{errors.email.message}</p>
               )}
@@ -100,7 +99,7 @@ const Login = () => {
                     message: "Password must be at least 6 characters",
                   },
                 })}
-              ></input>
+              />
               {errors.password && (
                 <p className="text-danger fs-6">{errors.password.message}</p>
               )}
@@ -111,6 +110,7 @@ const Login = () => {
                 Login
               </button>
             </div>
+
             <div className="text-center mt-2">
               <span>
                 Already have an account? <Link to={"/signup"}>Signup</Link>

@@ -12,20 +12,8 @@ const ForgetPassword = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm();
-
-  // const handleSuccess = (msg) => {
-  //   toast.success(msg, {
-  //     position: "bottom-left",
-  //   });
-  // };
-
-  // const handleError = (msg) => {
-  //   toast.error(msg, {
-  //     position: "bottom-left",
-  //   });
-  // };
 
   const onSubmit = async (data) => {
     try {
@@ -34,26 +22,26 @@ const ForgetPassword = () => {
         data
       );
       if (response.status === 200) {
-       toast.success(response.data.message || "Reset code sent",{
-        position:"top-right",
-        autoClose:2500
-       });
+        toast.success(response.data.message || "Reset code sent", {
+          position: "top-right",
+          autoClose: 2500,
+        });
 
         reset();
 
         setTimeout(() => {
           navigate("/ResetPassword");
         }, 2000);
-      }else{
-        toast.error(response.data.message || "User doesn't exist",{
-          position:"top-right",
-          autoClose:2500
+      } else {
+        toast.error(response.data.message || "User doesn't exist", {
+          position: "top-right",
+          autoClose: 2500,
         });
         reset();
       }
     } catch (err) {
       const errorMsg =
-        err.response?.data?.message || "Failed to place order. Try again.";
+        err.response?.data?.message || "Failed to send the reset code.";
       toast.error(errorMsg, {
         position: "top-right",
         autoClose: 3000,
@@ -62,10 +50,10 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="container" style={{ width: "30%" }}>
+    <div className="container mt-5">
       <ToastContainer />
-      <div className="row">
-        <div className="col">
+      <div className="row justify-content-center">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
           <h4 className="text-center mt-3">Verify Email</h4>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-6">
