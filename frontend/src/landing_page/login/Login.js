@@ -28,6 +28,8 @@ const Login = () => {
           autoClose: 2500,
         });
 
+        reset();
+
         // fetch the user info to update context
         const userInfo = await axios.get("http://localhost:3002/user", {
           withCredentials: true,
@@ -45,6 +47,7 @@ const Login = () => {
           position: "top-right",
           autoClose: 2500,
         });
+        reset();
       }
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Fail to login";
@@ -68,6 +71,7 @@ const Login = () => {
               </label>
               <input
                 type="email"
+                id="email"
                 className="form-control"
                 {...register("email", {
                   required: "Email is required",
@@ -87,6 +91,7 @@ const Login = () => {
               </label>
               <input
                 type="password"
+                id="password"
                 className="form-control"
                 {...register("password", {
                   required: "Password is required",

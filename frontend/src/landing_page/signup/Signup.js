@@ -35,6 +35,7 @@ const Signup = () => {
           position: "top-right",
           autoClose: 2500,
         });
+        reset();
       }
     } catch (error) {
       const errorMsg =
@@ -59,6 +60,7 @@ const Signup = () => {
               </label>
               <input
                 type="text"
+                id="username"
                 className="form-control"
                 {...register("username", {
                   required: "Username is required",
@@ -75,6 +77,7 @@ const Signup = () => {
               </label>
               <input
                 type="email"
+                id="email"
                 className="form-control"
                 {...register("email", {
                   required: "Email is required",
@@ -95,6 +98,7 @@ const Signup = () => {
               </label>
               <input
                 type="password"
+                id="password"
                 className="form-control"
                 {...register("password", {
                   required: "Password is required",

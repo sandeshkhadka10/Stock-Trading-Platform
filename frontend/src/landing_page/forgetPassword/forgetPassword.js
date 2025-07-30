@@ -12,20 +12,20 @@ const ForgetPassword = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
+    reset
   } = useForm();
 
-  const handleSuccess = (msg) => {
-    toast.success(msg, {
-      position: "bottom-left",
-    });
-  };
+  // const handleSuccess = (msg) => {
+  //   toast.success(msg, {
+  //     position: "bottom-left",
+  //   });
+  // };
 
-  const handleError = (msg) => {
-    toast.error(msg, {
-      position: "bottom-left",
-    });
-  };
+  // const handleError = (msg) => {
+  //   toast.error(msg, {
+  //     position: "bottom-left",
+  //   });
+  // };
 
   const onSubmit = async (data) => {
     try {
@@ -34,17 +34,30 @@ const ForgetPassword = () => {
         data
       );
       if (response.status === 200) {
-        handleSuccess("Reset Code Sent");
+       toast.success(response.data.message || "Reset code sent",{
+        position:"top-right",
+        autoClose:2500
+       });
+
         reset();
 
         setTimeout(() => {
           navigate("/ResetPassword");
         }, 2000);
+      }else{
+        toast.error(response.data.message || "User doesn't exist",{
+          position:"top-right",
+          autoClose:2500
+        });
+        reset();
       }
-    } catch (error) {
-      const errorMessage =
-        "Failed To Send Reset Code";
-      handleError(errorMessage);
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to place order. Try again.";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 

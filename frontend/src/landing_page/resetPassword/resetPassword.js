@@ -15,32 +15,45 @@ const ResetPassword = () => {
     reset,
   } = useForm();
 
-  const handleSuccess = (msg) => {
-    toast.success(msg, {
-      position: "bottom-left"
-    });
-  };
+  // const handleSuccess = (msg) => {
+  //   toast.success(msg, {
+  //     position: "bottom-left"
+  //   });
+  // };
 
-  const handleError = (msg) => {
-    toast.error(msg, {
-      position: "bottom-left"
-    });
-  };
+  // const handleError = (msg) => {
+  //   toast.error(msg, {
+  //     position: "bottom-left"
+  //   });
+  // };
 
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:3002/resetPassword", data);
-      if (response.status == 200) {
-        handleSuccess("Password Reset Successfully");
+      if (response.status === 200 || response.status === 201) {
+        toast.success(response.data.message || "Password Reset Successfully",{
+          position:"top-right",
+          autoClose:2500
+        });
+    
         reset();
         
         setTimeout(() => {
           navigate("/login");
         }, 2000);
+      }else{
+        toast.error(response.data.message || "Invalid code or email",{
+          position:"top-right",
+          autoClose:2500
+        });
+        reset();
       }
-    } catch (error) {
-      const errorMessage = "Failed To Reset Password";
-      handleError(errorMessage);
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to place order. Try again.";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
