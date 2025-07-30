@@ -1,10 +1,10 @@
-import React,{useContext} from "react";
-import { useForm} from "react-hook-form";
+import React, { useContext } from "react";
+import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import {AuthContext} from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const {
@@ -14,54 +14,46 @@ const Login = () => {
     reset,
   } = useForm();
 
-  const {login} = useContext(AuthContext);
-
-  const handleSuccess = (msg) => {
-    toast.success(msg,{
-      position:"bottom-left"
-    });
-  };
-
-  const handleError = (err) => {
-    toast.error(err,{
-      position:"bottom-left"
-    });
-  };
+  const { login } = useContext(AuthContext);
 
   const onSubmit = async (data) => {
-  try {
-    const response = await axios.post("http://localhost:3002/login", data, {
-      withCredentials: true,
-    });
+    try {
+      const response = await axios.post("http://localhost:3002/login", data, {
+        withCredentials: true,
+      });
 
-    if (!response.data.success) {
-      handleError(response.data.message || "Login Failed");
-      return;
+      if (response.status === 200 || response.status === 201) {
+        toast.success(response.data.message || "User logged in successfully", {
+          position: "top-right",
+          autoClose: 2500,
+        });
+
+        // fetch the user info to update context
+        const userInfo = await axios.get("http://localhost:3002/user", {
+          withCredentials: true,
+        });
+
+        if (userInfo.status === 201) {
+          login(userInfo.data.existingUser);
+        }
+
+        setTimeout(() => {
+          window.location.href = "http://localhost:3000/";
+        }, 1000);
+      } else {
+        toast.error(response.data.message || "Incorrect email or password", {
+          position: "top-right",
+          autoClose: 2500,
+        });
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Fail to login";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 2500,
+      });
     }
-
-    // If login successful
-    handleSuccess(response.data.message || "Login Successful");
-    reset();
-
-    // fetch the user info to update context
-    const userInfo = await axios.get("http://localhost:3002/user", {
-      withCredentials: true,
-    });
-
-    if (userInfo.data.success) {
-      login(userInfo.data.existingUser);
-    }
-
-    setTimeout(() => {
-     window.location.href = "http://localhost:3000/";
-    }, 1000);
-  } catch (error) {
-    const errorMessage = error?.response?.data?.message || "Login Failed";
-    handleError(errorMessage);
-  }
-};
-
-
+  };
 
   return (
     <div className="container" style={{ width: "30%" }}>
@@ -115,11 +107,16 @@ const Login = () => {
               </button>
             </div>
             <div className="text-center mt-2">
-                <span>Already have an account? <Link to={"/signup"}>Signup</Link></span>
+              <span>
+                Already have an account? <Link to={"/signup"}>Signup</Link>
+              </span>
             </div>
 
             <div className="text-center mt-2">
-                <span>Reset Your Password? <Link to={"/ForgetPassword"}>Forget Password</Link></span>
+              <span>
+                Reset Your Password?{" "}
+                <Link to={"/ForgetPassword"}>Forget Password</Link>
+              </span>
             </div>
           </form>
         </div>

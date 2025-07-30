@@ -16,7 +16,7 @@ module.exports.Signup = async (req, res, next) => {
   const { email, password, username, createdAt } = req.body;
   const existingUser = await UsersModel.findOne({ email });
   if (existingUser) {
-    return res.json({ message: "User already exists" });
+    return res.status(409).json({ message: "User already exists" });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -36,7 +36,6 @@ module.exports.Signup = async (req, res, next) => {
     .status(201)
     .json({
       message: "User signed in successfully",
-      success: true,
       noneExistingUser,
     });
   // next();
@@ -45,15 +44,15 @@ module.exports.Signup = async (req, res, next) => {
 module.exports.Login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.json({ success: false, mesasge: "All fields are required" });
+    return res.status(404).json({mesasge: "All fields are required" });
   }
   const existingUser = await UsersModel.findOne({ email });
   if (!existingUser) {
-    return res.json({ success: false, message: "Incorrect email or password" });
+    return res.status(401).json({ message: "User doesn't exist"});
   }
   const auth = await bcrypt.compare(password, existingUser.password);
   if (!auth) {
-    return res.json({ success: false, message: "Incorrect email or password" });
+    return res.status(401).json({ message: "Incorrect email or password" });
   }
   const token = createSecretToken(existingUser._id);
   res.cookie("token", token, {
@@ -61,7 +60,7 @@ module.exports.Login = async (req, res, next) => {
   });
   res
     .status(201)
-    .json({ success: true, message: "User logged in successfully" });
+    .json({message: "User logged in successfully" });
 };
 
 module.exports.Logout = (req, res) => {

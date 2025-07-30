@@ -12,38 +12,37 @@ const Signup = () => {
     reset,
   } = useForm();
 
-  const handleSuccess = (msg) => {
-    toast.success(msg, {
-      position: "bottom-left",
-    });
-  };
-
-  const handleError = (err) => {
-    toast.error(err, {
-      position: "bottom-left",
-    });
-  };
-
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:3002/signup", data, {
         withCredentials: true,
       });
-      
-      // Check for success flag instead of just message existence
-      if (response.data.success) {
-        handleSuccess(response.data.message || "Signup Successful");
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(response.data.message || "User signed in successfully", {
+          position: "top-right",
+          autoClose: 2500,
+        });
+
         reset();
-        
+
         setTimeout(() => {
           window.location.href = "http://localhost:3000/";
         }, 1000);
+
       } else {
-        handleError(response.data.message || "Signup Failed");
+        toast.error(response.data.message || "User already exist", {
+          position: "top-right",
+          autoClose: 2500,
+        });
       }
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || "Signup Failed";
-      handleError(errorMessage);
+      const errorMsg =
+        error.response?.data?.message || "Fail to Signup";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 2500,
+      });
     }
   };
 
@@ -89,7 +88,7 @@ const Signup = () => {
                 <p className="text-danger">{errors.email.message}</p>
               )}
             </div>
-            
+
             <div className="mb-3 fs-6">
               <label htmlFor="password" className="form-label">
                 Password
