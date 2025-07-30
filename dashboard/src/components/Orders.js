@@ -1,46 +1,65 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
   const [allHoldings, setAllHoldings] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:3002/allOrders",{
-      withCredentials:true
-    }).then((res) => {
-      console.log(res.data);
-      setAllOrders(res.data);
-    });
+    axios
+      .get("http://localhost:3002/allOrders", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log(res.data);
+        setAllOrders(res.data);
+      });
   }, []);
 
   // it is for canceling the sell or buy of the related stock
-  const handleCancelClick = (uid) => {
-    axios
-      .delete(`http://localhost:3002/deleteOrder/${uid}`,{
-        withCredentials:true
-      })
-      .then(() => {
-        // Remove deleted order from allOrders immediately
-        setAllOrders((prevOrders) =>
-          prevOrders.filter((order) => order._id !== uid)
-        );
+  const handleCancelClick = async (uid) => {
+    try {
+      const deleteShareRes = await axios.delete(
+        `http://localhost:3002/deleteOrder/${uid}`,
+        {
+          withCredentials: true,
+        }
+      );
 
-        // Update holdings if needed
-        axios.get("http://localhost:3002/allHoldings",{
-          withCredentials:true
-        }).then((res) => {
-          setAllHoldings(res.data);
-        });
-      })
-      .catch((err) => {
-        console.error("Delete failed:", err.response?.data || err.message);
+      if (deleteShareRes.status === 200 || deleteShareRes.status === 201) {
+        toast.success(
+          deleteShareRes.data.message || "Order placed successfully",
+          {
+            position: "top-right",
+            autoClose: 2500,
+          }
+        );
+      }
+
+      setAllOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== uid)
+      );
+
+      const res = await axios.get("http://localhost:3002/allHoldings", {
+        withCredentials: true,
       });
+      setAllHoldings(res.data);
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to place order. Try again.";
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
   };
 
   return (
     <div className="orders">
+      <ToastContainer/>
       <div className="no-orders">
         <h3 className="title">Orders({allOrders.length})</h3>
         <div className="order-table">
@@ -94,7 +113,7 @@ const OrderListActions = ({ uid, onDelete }) => {
         <Link className="btn btn-blue" onClick={handleEditClick}>
           Edit
         </Link>
-        <Link to="" className="btn btn-grey" onClick={()=>onDelete(uid)}>
+        <Link to="" className="btn btn-grey" onClick={() => onDelete(uid)}>
           Cancel
         </Link>
       </div>

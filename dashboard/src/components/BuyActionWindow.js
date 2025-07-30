@@ -35,7 +35,7 @@ const BuyActionWindow = ({ uid }) => {
           autoClose: 2500,
         });
 
-        // Optional: update holdings
+        // update holdings
         const res = await axios.get("http://localhost:3002/allHoldings", {
           withCredentials: true,
         });

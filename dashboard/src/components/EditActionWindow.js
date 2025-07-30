@@ -16,7 +16,7 @@ const EditActionWindow = ({ uid }) => {
     handleSubmit,
     formState: { errors },
     setValue,
-    reset
+    reset,
   } = useForm();
 
   const generalContext = useContext(GeneralContext);
@@ -54,9 +54,12 @@ const EditActionWindow = ({ uid }) => {
         });
 
         // Refresh holdings
-        const holdingRes = await axios.get("http://localhost:3002/allHoldings", {
-          withCredentials: true,
-        });
+        const holdingRes = await axios.get(
+          "http://localhost:3002/allHoldings",
+          {
+            withCredentials: true,
+          }
+        );
         setAllHoldings(holdingRes.data);
 
         reset();
@@ -81,71 +84,73 @@ const EditActionWindow = ({ uid }) => {
   };
 
   return (
-    <>
-      <ToastContainer/>
-      <div className="container" id="buy-window" draggable="true">
-        <form onSubmit={handleSubmit(onSubmitHandler)}>
-          <div className="regular-order">
-            <div className="inputs">
-              <fieldset>
-                <legend>Qty.</legend>
-                <input
-                  type="number"
-                  {...register("qty", {
-                    required: "Quantity is required",
-                    min: {
-                      value: 1,
-                      message: "Minimum quantity is 1",
-                    },
-                  })}
-                />
-                {errors.qty && (
-                  <p style={{ color: "red", fontSize: "0.75rem" }}>
-                    {errors.qty.message}
-                  </p>
-                )}
-              </fieldset>
+    <div className="container" id="buy-window" draggable="true">
+      <ToastContainer />
+      <form onSubmit={handleSubmit(onSubmitHandler)}>
+        <div className="regular-order">
+          <div className="inputs">
+            <fieldset>
+              <legend>Qty.</legend>
+              <input
+                type="number"
+                {...register("qty", {
+                  required: "Quantity is required",
+                  min: {
+                    value: 1,
+                    message: "Minimum quantity is 1",
+                  },
+                })}
+              />
+              {errors.qty && (
+                <p style={{ color: "red", fontSize: "0.75rem" }}>
+                  {errors.qty.message}
+                </p>
+              )}
+            </fieldset>
 
-              <fieldset>
-                <legend>Price</legend>
-                <input
-                  type="number"
-                  step="0.05"
-                  {...register("price", {
-                    required: "Price is required",
-                    min: {
-                      value: 100,
-                      message: "Minimum price is Rs 100",
-                    },
-                  })}
-                />
-                {errors.price && (
-                  <p style={{ color: "red", fontSize: "0.75rem" }}>
-                    {errors.price.message}
-                  </p>
-                )}
-              </fieldset>
-            </div>
+            <fieldset>
+              <legend>Price</legend>
+              <input
+                type="number"
+                step="0.05"
+                {...register("price", {
+                  required: "Price is required",
+                  min: {
+                    value: 100,
+                    message: "Minimum price is Rs 100",
+                  },
+                })}
+              />
+              {errors.price && (
+                <p style={{ color: "red", fontSize: "0.75rem" }}>
+                  {errors.price.message}
+                </p>
+              )}
+            </fieldset>
           </div>
+        </div>
 
-          <div className="buttons">
-            <div>
-              <button className="btn btn-blue" type="submit" style={{ border: "none" }}>
-                Apply
-              </button>
-              <button
-                type="button"
-                className="btn btn-grey"
-                onClick={handleCancelClick}
-                style={{ border: "none" }}
-              >
-                Cancel
-              </button>
-            </div>
+        <div className="buttons">
+          <div>
+            <button
+              className="btn btn-blue"
+              type="submit"
+              style={{ border: "none" }}
+            >
+              Apply
+            </button>
+            <button
+              type="button"
+              className="btn btn-grey"
+              onClick={handleCancelClick}
+              style={{ border: "none" }}
+            >
+              Cancel
+            </button>
           </div>
-        </form>
-      </div>
-    </>
+        </div>
+      </form>
+    </div>
   );
 };
 
