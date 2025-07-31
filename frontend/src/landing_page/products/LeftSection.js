@@ -11,14 +11,14 @@ function LeftSection({
 }) {
   return (
     <div className="container mt-5">
-      <div className="row align-items-center">
+      <div className="row justify-content-center align-items-center px-3 px-md-4 ms-5">
         {/* Image Section */}
-        <div className="col-12 col-md-6 mb-4 mb-md-0 text-center">
+        <div className="col-12 col-sm-10 col-md-6 text-center mb-4 mb-md-0">
           <img src={imageURL} className="img-fluid w-75" alt={productName} />
         </div>
 
         {/* Text Section */}
-        <div className="col-12 col-md-6 mt-4 mt-md-5 p-md-5 text-center text-md-start">
+        <div className="col-12 col-sm-10 col-md-6 text-center text-md-start mt-4 mt-md-5 px-md-4">
           <h1 className="fs-2">{productName}</h1>
           <p>{productDescription}</p>
 

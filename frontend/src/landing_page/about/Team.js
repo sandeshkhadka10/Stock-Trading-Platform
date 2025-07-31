@@ -3,19 +3,16 @@ import React from "react";
 function Team() {
   return (
     <div className="container">
-      {/* Heading */}
       <div className="row justify-content-center mt-5 border-top ms-5">
         <div className="col-12 col-md-10 p-3">
           <h1 className="text-center">People</h1>
         </div>
       </div>
 
-      {/* Content */}
       <div
         className="row justify-content-center text-muted ms-5"
         style={{ lineHeight: "1.8", fontSize: "1em" }}
       >
-        {/* Image and name */}
         <div className="col-12 col-md-5 p-4 text-center">
           <img
             src="media/images/nithinKamath.jpg"

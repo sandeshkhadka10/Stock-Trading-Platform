@@ -3,8 +3,8 @@ import React from "react";
 function Hero() {
   return (
     <div className="container border-bottom mb-5">
-      <div className="row justify-content-center text-center mt-5 p-3">
-        <div className="col-12 col-md-10">
+      <div className="row justify-content-center text-center mt-5 px-3 px-md-4 ms-5">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-7">
           <h1 className="fs-2">Technology</h1>
           <h3 className="text-muted mt-3 fs-5">
             Sleek, modern and intuitive trading platform

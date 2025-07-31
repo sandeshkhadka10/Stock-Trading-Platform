@@ -58,12 +58,12 @@ const Login = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className="container-fluid d-flex justify-content-center align-items-center ms-5">
       <ToastContainer />
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-8 col-lg-6 col-xl-4">
-          <h4 className="text-center mt-3">Login Now</h4>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+      <div className="row w-100 justify-content-center">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 bg-white p-4">
+          <h4 className="text-center mt-2 mb-4">Login Now</h4>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-6">
               <label htmlFor="email" className="form-label">
                 Email
@@ -111,16 +111,16 @@ const Login = () => {
               </button>
             </div>
 
-            <div className="text-center mt-2">
+            <div className="text-center mt-3">
               <span>
-                Already have an account? <Link to={"/signup"}>Signup</Link>
+                Don't have an account? <Link to="/signup">Signup</Link>
               </span>
             </div>
 
             <div className="text-center mt-2">
               <span>
-                Reset Your Password?{" "}
-                <Link to={"/ForgetPassword"}>Forget Password</Link>
+                Forgot your password?{" "}
+                <Link to="/ForgetPassword">Reset Here</Link>
               </span>
             </div>
           </form>
