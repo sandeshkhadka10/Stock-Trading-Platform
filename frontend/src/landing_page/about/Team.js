@@ -3,31 +3,40 @@ import React from "react";
 function Team() {
   return (
     <div className="container">
-      <div className="row p-3 mt-5 border-top">
-        <h1 className="text-center">People</h1>
+      {/* Heading */}
+      <div className="row justify-content-center mt-5 border-top ms-5">
+        <div className="col-12 col-md-10 p-3">
+          <h1 className="text-center">People</h1>
+        </div>
       </div>
+
+      {/* Content */}
       <div
-        className="row p-3 text-muted"
+        className="row justify-content-center text-muted ms-5"
         style={{ lineHeight: "1.8", fontSize: "1em" }}
       >
-        <div className="col-12 col-md-6 p-3 text-center">
+        {/* Image and name */}
+        <div className="col-12 col-md-5 p-4 text-center">
           <img
             src="media/images/nithinKamath.jpg"
             alt="nithin photo"
+            className="mx-auto d-block"
             style={{
               borderRadius: "50%",
               width: "200px",
               height: "200px",
+              objectFit: "cover",
             }}
-            className="mx-auto d-block"
           />
           <h4 className="mt-4">Nithin Kamath</h4>
           <h6>Founder, CEO</h6>
         </div>
-        <div className="col-12 col-md-6 p-3 text-center text-md-start">
+
+        {/* Description */}
+        <div className="col-12 col-md-5 p-4 text-center text-md-start ms-5">
           <p>
             Nithin bootstrapped and founded Zerodha in 2010 to overcome the
-            hurdles he faced during his decade long stint as a trader. Today,
+            hurdles he faced during his decade-long stint as a trader. Today,
             Zerodha has changed the landscape of the Indian broking industry.
           </p>
           <p>
@@ -46,7 +55,7 @@ function Team() {
             </a>{" "}
             /{" "}
             <a href="#" style={{ textDecoration: "none" }}>
-              Homepage
+              LinkedIn
             </a>{" "}
             /{" "}
             <a href="#" style={{ textDecoration: "none" }}>

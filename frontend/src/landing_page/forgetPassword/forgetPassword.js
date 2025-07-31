@@ -50,10 +50,10 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 px-3 px-md-0 ms-5">
       <ToastContainer />
       <div className="row justify-content-center">
-        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mx-auto">
           <h4 className="text-center mt-3">Verify Email</h4>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-6">
