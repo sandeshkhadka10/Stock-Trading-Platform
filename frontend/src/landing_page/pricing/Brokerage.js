@@ -3,7 +3,7 @@ import React from "react";
 function Brokerage() {
   return (
     <div className="container-fluid px-3 px-md-5">
-      <div className="mx-auto  ms-5" style={{ maxWidth: "1140px" }}>
+      <div className="mx-auto" style={{ maxWidth: "1140px" }}>
         <div className="row mt-5 p-3 p-md-5 text-center border-top">
           <div className="col-12 col-md-8 p-3 p-md-4">
             <a href="#" style={{ textDecoration: "none" }}>

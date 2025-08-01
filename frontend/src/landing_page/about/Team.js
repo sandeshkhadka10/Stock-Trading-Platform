@@ -3,14 +3,14 @@ import React from "react";
 function Team() {
   return (
     <div className="container">
-      <div className="row justify-content-center mt-5 border-top ms-5">
+      <div className="row justify-content-center mt-5 border-top">
         <div className="col-12 col-md-10 p-3">
           <h1 className="text-center">People</h1>
         </div>
       </div>
 
       <div
-        className="row justify-content-center text-muted ms-5"
+        className="row justify-content-center text-muted"
         style={{ lineHeight: "1.8", fontSize: "1em" }}
       >
         <div className="col-12 col-md-5 p-4 text-center">
@@ -30,7 +30,7 @@ function Team() {
         </div>
 
         {/* Description */}
-        <div className="col-12 col-md-5 p-4 text-center text-md-start ms-5">
+        <div className="col-12 col-md-5 p-4 text-center text-md-start">
           <p>
             Nithin bootstrapped and founded Zerodha in 2010 to overcome the
             hurdles he faced during his decade-long stint as a trader. Today,

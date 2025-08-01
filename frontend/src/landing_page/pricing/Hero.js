@@ -3,7 +3,7 @@ import React from "react";
 function Hero() {
   return (
     <div className="container">
-      <div className="row justify-content-center text-center mt-5 border-bottom p-4 p-md-5 ms-5">
+      <div className="row justify-content-center text-center mt-5 border-bottom p-4 p-md-5">
         <div className="col-12 col-md-10 col-lg-8">
           <h1>Pricing</h1>
           <h3 className="text-muted fs-6 fs-md-5 mt-3">
@@ -12,7 +12,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="row justify-content-center mt-4 mt-md-5 p-3 p-md-5 ms-5">
+      <div className="row justify-content-center mt-4 mt-md-5 p-3 p-md-5">
         <div className="col-12 col-md-4 p-3 p-md-4 text-center">
           <img
             src="media/images/pricingEquity.svg"
@@ -25,7 +25,6 @@ function Hero() {
           </p>
         </div>
 
-        {/* Card 2 */}
         <div className="col-12 col-md-4 p-3 p-md-4 text-center">
           <img
             src="media/images/intradayTrades.svg"
@@ -38,7 +37,6 @@ function Hero() {
           </p>
         </div>
 
-        {/* Card 3 */}
         <div className="col-12 col-md-4 p-3 p-md-4 text-center">
           <img
             src="media/images/pricingEquity.svg"

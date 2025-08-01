@@ -29,17 +29,15 @@ const Signup = () => {
         setTimeout(() => {
           window.location.href = "http://localhost:3000/";
         }, 1000);
-
       } else {
-        toast.error(response.data.message || "User already exist", {
+        toast.error(response.data.message || "User already exists", {
           position: "top-right",
           autoClose: 2500,
         });
         reset();
       }
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.message || "Fail to Signup";
+      const errorMsg = error.response?.data?.message || "Failed to Signup";
       toast.error(errorMsg, {
         position: "top-right",
         autoClose: 2500,
@@ -48,16 +46,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="container" style={{ width: "30%" }}>
+    <div
+      className="container d-flex justify-content-center align-items-center"
+    >
       <ToastContainer />
-      <div className="row">
-        <div className="col">
-          <h4 className="text-center mt-3">Signup Now</h4>
+      <div className="row justify-content-center w-100 mx-0 ms-5">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+          <h4 className="text-center mt-4">Signup Now</h4>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3 fs-6">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
+              <label htmlFor="username" className="form-label">Username</label>
               <input
                 type="text"
                 id="username"
@@ -72,9 +70,7 @@ const Signup = () => {
             </div>
 
             <div className="mb-3 fs-6">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
+              <label htmlFor="email" className="form-label">Email</label>
               <input
                 type="email"
                 id="email"
@@ -93,9 +89,7 @@ const Signup = () => {
             </div>
 
             <div className="mb-3 fs-6">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
+              <label htmlFor="password" className="form-label">Password</label>
               <input
                 type="password"
                 id="password"

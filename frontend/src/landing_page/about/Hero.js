@@ -3,7 +3,7 @@ import React from "react";
 function Hero() {
   return (
     <div className="container">
-      <div className="row justify-content-center mt-5 mb-5 ms-5">
+      <div className="row justify-content-center mt-5 mb-5">
         <div className="col-12 col-md-10 px-3 px-md-5">
           <h1 className="fs-4 fs-md-3 text-center">
             We pioneered the discount broking model in India.
@@ -13,7 +13,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="row justify-content-center mt-5 border-top text-muted ms-5">
+      <div className="row justify-content-center mt-5 border-top text-muted">
         <div
           className="col-12 col-lg-10 d-flex flex-column flex-md-row justify-content-between"
           style={{ lineHeight: "1.8", fontSize: "1em" }}

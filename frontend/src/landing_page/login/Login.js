@@ -58,7 +58,7 @@ const Login = () => {
   };
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center ms-5">
+    <div className="container-fluid d-flex justify-content-center align-items-center">
       <ToastContainer />
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 bg-white p-4">

@@ -8,8 +8,7 @@ function RightSection({
 }) {
   return (
     <div className="container mt-5">
-      <div className="row justify-content-center align-items-center ms-5">
-        {/* Text Section */}
+      <div className="row justify-content-center align-items-center">
         <div className="col-12 col-md-10 col-lg-6 mt-4 mt-md-5 px-4 px-md-5 text-center text-md-start">
           <h1 className="fs-2">{productName}</h1>
           <p>{productDescription}</p>
@@ -21,7 +20,6 @@ function RightSection({
           </div>
         </div>
 
-        {/* Image Section */}
         <div className="col-12 col-md-10 col-lg-6 text-center mt-4 mt-md-0">
           <img
             src={imageURL}

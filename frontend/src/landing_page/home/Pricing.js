@@ -2,11 +2,10 @@ import React from "react";
 
 function Pricing() {
   return (
-    <div className="container-fluid px-3 px-md-5 mb-5 ms-5">
+    <div className="container-fluid px-3 px-md-5 mb-5">
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8">
           <div className="row">
-            {/* Text Section */}
             <div className="col-12 col-md-5 mb-4">
               <h1 className="mb-3 fs-2">Unbeatable pricing</h1>
               <p>
@@ -19,7 +18,6 @@ function Pricing() {
               </a>
             </div>
 
-            {/* Pricing Cards Section */}
             <div className="col-12 col-md-7">
               <div className="row text-center g-3">
                 <div className="col-12 col-sm-6">

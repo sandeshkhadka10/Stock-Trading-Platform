@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Hero() {
   return (
-    <div className="container-fluid px-3 px-md-5 py-5 mb-5 ms-5">
+    <div className="container-fluid px-3 px-md-5 py-5 mb-5">
       <div className="row justify-content-center">
         <div className="col-12 col-md-10 col-lg-8 text-center">
           <img

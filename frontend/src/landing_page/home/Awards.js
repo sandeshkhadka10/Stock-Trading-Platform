@@ -2,11 +2,10 @@ import React from "react";
 
 function Awards() {
   return (
-    <div className="container-fluid mt-5 ms-5">
+    <div className="container-fluid mt-5">
       <div className="d-flex justify-content-center">
         <div className="w-100" style={{ maxWidth: "1140px" }}>
           <div className="row">
-            {/* Left Image Section */}
             <div className="col-12 col-md-6 p-4 p-md-5 text-center">
               <img
                 src="media/images/largestBroker.svg"
@@ -16,7 +15,6 @@ function Awards() {
               />
             </div>
 
-            {/* Right Content Section */}
             <div className="col-12 col-md-6 p-4 p-md-5 mt-4 mt-md-5">
               <h1 className="text-center text-md-start">
                 Largest stock broker in India

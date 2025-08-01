@@ -2,11 +2,9 @@ import React from "react";
 
 function Stats() {
   return (
-    <div className="container-fluid py-4 ms-5">
-      {/* Centered and width-constrained container */}
+    <div className="container-fluid py-4">
       <div className="mx-auto px-3 px-sm-4 px-md-5" style={{ maxWidth: "1140px" }}>
         <div className="row">
-          {/* Text Section */}
           <div className="col-12 col-md-6 mb-4 mb-md-0">
             <h1 className="fs-2 mb-4">Trust with confidence</h1>
 
@@ -39,7 +37,6 @@ function Stats() {
             </p>
           </div>
 
-          {/* Image & Links Section */}
           <div className="col-12 col-md-6 text-center">
             <img
               src="media/images/ecosystem.png"
