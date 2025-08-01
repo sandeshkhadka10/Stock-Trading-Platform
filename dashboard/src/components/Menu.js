@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import "./Menu.css";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropDownOpen, setIsProfileDropDownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // New
 
   const handleMenuClick = (index) => {
     setSelectedMenu(index);
+    setIsMenuOpen(false); // Close menu after selection (for mobile)
   };
 
-  const handleProfileClick = (index) => {
+  const handleProfileClick = () => {
     setIsProfileDropDownOpen(!isProfileDropDownOpen);
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const menuClass = "menu";
@@ -18,9 +25,25 @@ const Menu = () => {
 
   return (
     <div className="menu-container">
-      <button onClick={() => window.location.href = "http://localhost:3001/"} style={{ background: "none", border: "none",cursor:"pointer",fontSize:"1.2rem"}}>Home Page</button>
-      {/* <img src="logo.png" style={{ width: "40px" }} /> */}
-      <div className="menus">
+      <button
+        onClick={() => (window.location.href = "http://localhost:3001/")}
+        style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "1.2rem",
+          marginBottom: "1rem",
+        }}
+      >
+        Home Page
+      </button>
+
+      {/* Hamburger Icon */}
+      <button className="hamburger" onClick={toggleMenu}>
+        {isMenuOpen ? "✕" : "☰"}
+      </button>
+
+      <div className={`menus ${isMenuOpen ? "open" : ""}`}>
         <ul>
           <li>
             <Link

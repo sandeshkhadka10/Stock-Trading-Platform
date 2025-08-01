@@ -35,16 +35,12 @@ const BuyActionWindow = ({ uid }) => {
           autoClose: 2500,
         });
 
-        // update holdings
         const res = await axios.get("http://localhost:3002/allHoldings", {
           withCredentials: true,
         });
         setAllHoldings(res.data);
-
-        // Reset form fields
         reset();
 
-        // Close buy window after delay so user sees toast
         setTimeout(() => {
           generalContext.closeBuyWindow();
         }, 1200);
@@ -64,7 +60,7 @@ const BuyActionWindow = ({ uid }) => {
   };
 
   return (
-    <div className="container" id="buy-window" draggable="true">
+    <div className="buy-container" id="buy-window" draggable="true">
       <ToastContainer />
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <div className="regular-order">
@@ -82,7 +78,7 @@ const BuyActionWindow = ({ uid }) => {
                   },
                 })}
               />
-              <span style={{ color: "red", fontSize: "0.7rem" }}>
+              <span className="error-text">
                 {errors.qty && <p>{errors.qty.message}</p>}
               </span>
             </fieldset>
@@ -100,7 +96,7 @@ const BuyActionWindow = ({ uid }) => {
                   },
                 })}
               />
-              <span style={{ color: "red", fontSize: "0.7rem" }}>
+              <span className="error-text">
                 {errors.price && <p>{errors.price.message}</p>}
               </span>
             </fieldset>

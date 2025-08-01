@@ -7,8 +7,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SellActionWindow = ({ uid }) => {
-  // const [stockQuantity, setStockQuantity] = useState(1);
-  // const [stockPrice, setStockPrice] = useState(0.0);
   const [allHoldings, setAllHoldings] = useState([]);
   const generalContext = useContext(GeneralContext);
 
@@ -21,8 +19,7 @@ const SellActionWindow = ({ uid }) => {
 
   const onSubmitHandler = async (data) => {
     try {
-      const sellRes = await axios
-      .post(
+      const sellRes = await axios.post(
         "http://localhost:3002/newOrder",
         {
           name: uid,
@@ -40,21 +37,16 @@ const SellActionWindow = ({ uid }) => {
           autoClose: 2500,
         });
 
-        // Optional: update holdings
         const res = await axios.get("http://localhost:3002/allHoldings", {
           withCredentials: true,
         });
         setAllHoldings(res.data);
-
-        // Reset form fields
         reset();
 
-        // Close buy window after delay so user sees toast
         setTimeout(() => {
           generalContext.closeSellWindow();
         }, 1200);
       }
-
     } catch (err) {
       const errorMsg =
         err.response?.data?.message || "Failed to place order. Try again.";
@@ -71,7 +63,7 @@ const SellActionWindow = ({ uid }) => {
 
   return (
     <div className="container" id="buy-window" draggable="true">
-      <ToastContainer/>
+      <ToastContainer />
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <div className="regular-order">
           <div className="inputs">
@@ -123,6 +115,7 @@ const SellActionWindow = ({ uid }) => {
               className="btn btn-grey"
               onClick={handleCancelClick}
               style={{ border: "none" }}
+              type="button"
             >
               Cancel
             </button>

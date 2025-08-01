@@ -7,9 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const EditActionWindow = ({ uid }) => {
-  const [editStockQuantity, setEditStockQuantity] = useState("");
-  const [editStockPrice, setEditStockPrice] = useState("");
   const [allHoldings, setAllHoldings] = useState([]);
+  const generalContext = useContext(GeneralContext);
 
   const {
     register,
@@ -19,9 +18,6 @@ const EditActionWindow = ({ uid }) => {
     reset,
   } = useForm();
 
-  const generalContext = useContext(GeneralContext);
-
-  // Fetch previous data
   useEffect(() => {
     axios
       .get(`http://localhost:3002/getOrder/${uid}`, {
@@ -29,12 +25,10 @@ const EditActionWindow = ({ uid }) => {
       })
       .then((res) => {
         const order = res.data;
-        setEditStockQuantity(order.qty);
-        setEditStockPrice(order.price);
         setValue("qty", order.qty);
         setValue("price", order.price);
       })
-      .catch((err) => {
+      .catch(() => {
         toast.error("Failed to fetch existing order");
       });
   }, [uid, setValue]);
@@ -48,31 +42,23 @@ const EditActionWindow = ({ uid }) => {
       );
 
       if (res.status === 200 || res.status === 201) {
-        toast.success(res.data.message || "Order updated successfully", {
+        toast.success("Order updated successfully", {
           position: "top-right",
           autoClose: 2500,
         });
 
-        // Refresh holdings
-        const holdingRes = await axios.get(
-          "http://localhost:3002/allHoldings",
-          {
-            withCredentials: true,
-          }
-        );
+        const holdingRes = await axios.get("http://localhost:3002/allHoldings", {
+          withCredentials: true,
+        });
         setAllHoldings(holdingRes.data);
 
         reset();
-
-        // Delay close for toast display
         setTimeout(() => {
           generalContext.closeEditWindow();
         }, 1200);
       }
     } catch (err) {
-      const errorMsg =
-        err.response?.data?.message || "Failed to update order. Try again.";
-      toast.error(errorMsg, {
+      toast.error("Failed to update order. Try again.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -95,17 +81,10 @@ const EditActionWindow = ({ uid }) => {
                 type="number"
                 {...register("qty", {
                   required: "Quantity is required",
-                  min: {
-                    value: 1,
-                    message: "Minimum quantity is 1",
-                  },
+                  min: { value: 1, message: "Minimum quantity is 1" },
                 })}
               />
-              {errors.qty && (
-                <p style={{ color: "red", fontSize: "0.75rem" }}>
-                  {errors.qty.message}
-                </p>
-              )}
+              {errors.qty && <p className="error-msg">{errors.qty.message}</p>}
             </fieldset>
 
             <fieldset>
@@ -115,38 +94,21 @@ const EditActionWindow = ({ uid }) => {
                 step="0.05"
                 {...register("price", {
                   required: "Price is required",
-                  min: {
-                    value: 100,
-                    message: "Minimum price is Rs 100",
-                  },
+                  min: { value: 100, message: "Minimum price is Rs 100" },
                 })}
               />
               {errors.price && (
-                <p style={{ color: "red", fontSize: "0.75rem" }}>
-                  {errors.price.message}
-                </p>
+                <p className="error-msg">{errors.price.message}</p>
               )}
             </fieldset>
           </div>
         </div>
 
         <div className="buttons">
+          <span>Margin required ₹140.65</span>
           <div>
-            <button
-              className="btn btn-blue"
-              type="submit"
-              style={{ border: "none" }}
-            >
-              Apply
-            </button>
-            <button
-              type="button"
-              className="btn btn-grey"
-              onClick={handleCancelClick}
-              style={{ border: "none" }}
-            >
-              Cancel
-            </button>
+            <button type="submit" className="btn btn-blue">Apply</button>
+            <button type="button" className="btn btn-grey" onClick={handleCancelClick}>Cancel</button>
           </div>
         </div>
       </form>

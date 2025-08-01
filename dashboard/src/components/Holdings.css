@@ -1,0 +1,78 @@
+/* Make the table horizontally scrollable on smaller screens */
+.order-table {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.order-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.order-table th, .order-table td {
+  padding: 10px 15px;
+  text-align: center;
+  font-size: 14px;
+  white-space: nowrap;
+  border-bottom: 1px solid #ddd;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Styling for profit and loss cells */
+.profit {
+  color: green;
+}
+
+.loss {
+  color: red;
+}
+
+/* Responsive layout for row cards */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.col {
+  flex: 1 1 100%;
+  text-align: center;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f7f7f7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.col h5 {
+  font-size: 1.2rem;
+  margin: 5px 0;
+}
+
+.col p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (min-width: 576px) {
+  .col {
+    flex: 1 1 30%;
+  }
+}
+
+/* Graph Container */
+.vertical-graph-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}

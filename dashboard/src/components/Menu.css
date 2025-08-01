@@ -1,0 +1,82 @@
+/* Menu.css */
+
+.menu-container {
+  position: relative;
+  padding: 1rem;
+}
+
+/* Hamburger Button */
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Full Menu Block */
+.menus {
+  transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+  }
+
+  .menus {
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    position: absolute;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .menus.open {
+    display: flex;
+  }
+
+  .menus ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.menu {
+  font-size: 1rem;
+  color: #555;
+}
+
+.selected {
+  font-weight: bold;
+  color: #000;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.avatar {
+  background-color: #ccc;
+  border-radius: 50%;
+  padding: 0.5rem 0.75rem;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.username {
+  font-size: 1rem;
+  color: #333;
+}
