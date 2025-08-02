@@ -26,3 +26,15 @@ module.exports.editOrdersSchema = Joi.object({
     qty: Joi.number().min(1).required(),
     price: Joi.number().min(0.01).required(),
 });
+
+// for forget passowrd
+module.exports.forgetPasswordSchema = Joi.object({
+    email:Joi.string().required()
+});
+
+// for reset password
+module.exports.resetPasswordSchema = Joi.object({
+    email:Joi.string().required(),
+    resetCode:Joi.string().required(),
+    newPassword:Joi.string().required()
+});

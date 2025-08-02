@@ -59,7 +59,7 @@ const EditActionWindow = ({ uid }) => {
       }
     } catch (err) {
       toast.error("Failed to update order. Try again.", {
-        position: "top-center",
+        position: "top-right",
         autoClose: 3000,
       });
     }
