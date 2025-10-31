@@ -9,6 +9,7 @@ checking if token match
 module.exports.userVerification = async (req, res, next) => {
   const token = req.cookies.token;
 
+  // check if session exits and token matches session
   if (!req.session.user || req.session.user.token !== token) {
     return res.status(401).json({ status: false, message: "Session expired or invalid" });
   }

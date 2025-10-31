@@ -34,6 +34,11 @@ module.exports.Signup = async (req, res, next) => {
     token: token,
   };
 
+  res.cookie("token", token, { 
+    httpOnly: true, 
+    maxAge: 7*24*60*60*1000 // 7 days
+  }); 
+
   res.status(201).json({
     message: "User signed in successfully",
     noneExistingUser,
@@ -62,6 +67,11 @@ module.exports.Login = async (req, res, next) => {
     token: token,
   };
 
+  res.cookie("token", token, { 
+    httpOnly: true, 
+    maxAge: 7*24*60*60*1000 // 7 days
+  }); 
+
   res.status(201).json({ message: "User logged in successfully" });
 };
 
@@ -73,8 +83,11 @@ module.exports.Logout = (req, res) => {
     }
   });
 
-  // clears session cookie
+  // clear the session cookie
   res.clearCookie("connect.sid");
+
+  // clear the jwt cookie
+  res.clearCookie("token");
 
   res.status(200).json({ message: "Logged out successfully" });
 };
