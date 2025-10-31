@@ -8,8 +8,9 @@ checking if token match
 */
 module.exports.userVerification = async (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ status: false, message: "No token found" });
+
+  if (!req.session.user || req.session.user.token !== token) {
+    return res.status(401).json({ status: false, message: "Session expired or invalid" });
   }
 
   jwt.verify(token, process.env.TOKEN_KEY, async (err, data) => {
@@ -21,7 +22,9 @@ module.exports.userVerification = async (req, res, next) => {
     if (!existingUser) {
       return res.status(404).json({ status: false, message: "User not found" });
     }
+
     req.user = existingUser;
     next();
   });
 };
+
