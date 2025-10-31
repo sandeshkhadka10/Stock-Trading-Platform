@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const cookieParser  = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -18,22 +18,19 @@ const PORT = process.env.PORT || 3002;
 
 // connecting to database
 const dbUrl = process.env.MONGO_URL;
-main()
-  .then(()=>{
-    console.log("Conencted Successfully");
-  })
-  .catch((err)=>{
-    console.log(err);
-  });
-
-async function main(){
-  await mongoose.Connection(dbUrl);
+async function main() {
+  await mongoose.connect(dbUrl);
+  console.log("Connected to MongoDB successfully");
 }
 
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow both ports
-  credentials: true
-}));
+main().catch((err) => console.log(err));
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001"], // Allow both ports
+    credentials: true,
+  })
+);
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -41,14 +38,14 @@ app.use(cookieParser());
 // creating MongoDB session store
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto:{
-    secret:process.env.SESSION_SECRET
+  crypto: {
+    secret: process.env.SESSION_SECRET,
   },
-  touchAfter: 24 * 3600
+  touchAfter: 24 * 3600,
 });
 
-store.on("error",(err)=>{
-  console.log("Error in mongo session store: ",err);
+store.on("error", (err) => {
+  console.log("Error in mongo session store: ", err);
 });
 
 const sessionOptions = {
@@ -56,19 +53,19 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie:{
+  cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true
-  }
+    httpOnly: true,
+  },
 };
 app.use(session(sessionOptions));
 
-app.use("/",authRoute);
-app.use("/",shareRoute);
+app.use("/", authRoute);
+app.use("/", shareRoute);
 
-app.all("/*splat",(req,res,next)=>{
-  next(new ExpressError(404,"Page not found!"));
+app.all("/*splat", (req, res, next) => {
+  next(new ExpressError(404, "Page not found!"));
 });
 
 // custom error handler
@@ -77,8 +74,7 @@ app.use((err, req, res, next) => {
   res.status(status).json({ error: message });
 });
 
-
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
   console.log(`Server running on Port ${PORT}`);
 });
 
@@ -248,4 +244,3 @@ app.listen(PORT,()=>{
 //   });
 //   res.send("Done");
 // });
-

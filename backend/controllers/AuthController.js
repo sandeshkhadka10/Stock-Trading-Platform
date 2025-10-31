@@ -28,45 +28,54 @@ module.exports.Signup = async (req, res, next) => {
   });
 
   const token = createSecretToken(noneExistingUser._id);
-  res.cookie("token", token, {
-    httpOnly: true,
-  });
+  // store token inside session
+  req.session.user = {
+    id: noneExistingUser._id,
+    token: token,
+  };
 
-  res
-    .status(201)
-    .json({
-      message: "User signed in successfully",
-      noneExistingUser,
-    });
+  res.status(201).json({
+    message: "User signed in successfully",
+    noneExistingUser,
+  });
   // next();
 };
 
 module.exports.Login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(404).json({mesasge: "All fields are required" });
+    return res.status(404).json({ message: "All fields are required" });
   }
   const existingUser = await UsersModel.findOne({ email });
   if (!existingUser) {
-    return res.status(401).json({ message: "User doesn't exist"});
+    return res.status(401).json({ message: "User doesn't exist" });
   }
   const auth = await bcrypt.compare(password, existingUser.password);
   if (!auth) {
     return res.status(401).json({ message: "Incorrect email or password" });
   }
   const token = createSecretToken(existingUser._id);
-  res.cookie("token", token, {
-    httpOnly: true,
-  });
-  res
-    .status(201)
-    .json({message: "User logged in successfully" });
+
+  // store token inside session
+  req.session.user = {
+    id: existingUser._id,
+    token: token,
+  };
+
+  res.status(201).json({ message: "User logged in successfully" });
 };
 
 module.exports.Logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
+  // destroy the session on logout
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
   });
+
+  // clears session cookie
+  res.clearCookie("connect.sid");
+
   res.status(200).json({ message: "Logged out successfully" });
 };
 
