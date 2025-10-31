@@ -3,25 +3,66 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
+const cookieParser  = require("cookie-parser");
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+
+const authRoute = require("./routes/AuthRoute");
+const shareRoute = require("./routes/ShareRoute");
+const ExpressError = require("./util/ExpressError");
 
 // it is for the deployment
 const PORT = process.env.PORT || 3002;
 
-const url = process.env.MONGO_URL;
+// connecting to database
+const dbUrl = process.env.MONGO_URL;
+main()
+  .then(()=>{
+    console.log("Conencted Successfully");
+  })
+  .catch((err)=>{
+    console.log(err);
+  });
 
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const cookieParser  = require("cookie-parser");
-const authRoute = require("./routes/AuthRoute");
-const shareRoute = require("./routes/ShareRoute");
-const ExpressError = require("./util/ExpressError");
+async function main(){
+  await mongoose.Connection(dbUrl);
+}
 
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow both ports
   credentials: true
 }));
+
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+// creating MongoDB session store
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto:{
+    secret:process.env.SESSION_SECRET
+  },
+  touchAfter: 24 * 3600
+});
+
+store.on("error",(err)=>{
+  console.log("Error in mongo session store: ",err);
+});
+
+const sessionOptions = {
+  store,
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie:{
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true
+  }
+};
+app.use(session(sessionOptions));
 
 app.use("/",authRoute);
 app.use("/",shareRoute);
@@ -36,12 +77,10 @@ app.use((err, req, res, next) => {
   res.status(status).json({ error: message });
 });
 
-app.listen(3002, () => {
-  console.log("App started!");
-  mongoose.connect(url);
-  console.log("Database connected");
-});
 
+app.listen(PORT,()=>{
+  console.log(`Server running on Port ${PORT}`);
+});
 
 // adding the dummy data for holdings in the database
 // app.get("/addHoldings",(req, res) => {
