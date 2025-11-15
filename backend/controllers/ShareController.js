@@ -11,6 +11,7 @@ module.exports.AllHoldings = async (req, res) => {
 module.exports.AllPositions = async (req, res) => {
   let allPositions = await PositionsModel.find({});
   if (!allPositions) {
+    // 500- internal server issue
     return res.status(500).json({ message: "No positions found" });
   }
   res.json(allPositions);
@@ -72,7 +73,7 @@ module.exports.NewOrder = async (req, res) => {
         userId,
       });
 
-      return res.status(201).json({ message: "Share Bought" });
+      return res.status(200).json({ message: "Share Bought" });
     }
   } else if (model === "Sell") {
     let existing = await HoldingsModel.findOne({ name, userId });
@@ -151,6 +152,7 @@ module.exports.EditOrder = async (req, res) => {
 
   let order = await OrdersModel.findById(id);
   if (!order) {
+    // 403- forbidden
     return res.status(403).json({ message: "Order not found" });
   }
   if(order.userId.toString() !== userId.toString()){

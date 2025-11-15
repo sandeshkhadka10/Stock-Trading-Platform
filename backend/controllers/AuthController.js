@@ -16,6 +16,7 @@ module.exports.Signup = async (req, res, next) => {
   const { email, password, username, createdAt } = req.body;
   const existingUser = await UsersModel.findOne({ email });
   if (existingUser) {
+    // 409- conflict
     return res.status(409).json({ message: "User already exists" });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,16 +49,13 @@ module.exports.Signup = async (req, res, next) => {
 
 module.exports.Login = async (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(404).json({ message: "All fields are required" });
-  }
   const existingUser = await UsersModel.findOne({ email });
   if (!existingUser) {
     return res.status(401).json({ message: "User doesn't exist" });
   }
   const auth = await bcrypt.compare(password, existingUser.password);
   if (!auth) {
-    return res.status(401).json({ message: "Incorrect email or password", existingUser });
+    return res.status(401).json({ message: "Incorrect email or password"});
   }
   const token = createSecretToken(existingUser._id);
 
@@ -72,7 +70,7 @@ module.exports.Login = async (req, res, next) => {
     maxAge: 7*24*60*60*1000 // 7 days
   }); 
 
-  res.status(201).json({ message: "User logged in successfully" });
+  res.status(201).json({ message: "User logged in successfully",existingUser});
 };
 
 module.exports.Logout = (req, res) => {
@@ -96,6 +94,7 @@ module.exports.forgetPassword = async (req, res) => {
   const { email } = req.body;
   const existingUser = await UsersModel.findOne({ email });
   if (!existingUser) {
+    // 404- not found
     return res.status(404).json({ message: "User doesn't exist" });
   }
   const resetCode = Math.floor(10000 + Math.random() * 90000).toString();
