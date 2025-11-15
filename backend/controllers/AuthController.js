@@ -57,7 +57,7 @@ module.exports.Login = async (req, res, next) => {
   }
   const auth = await bcrypt.compare(password, existingUser.password);
   if (!auth) {
-    return res.status(401).json({ message: "Incorrect email or password" });
+    return res.status(401).json({ message: "Incorrect email or password", existingUser });
   }
   const token = createSecretToken(existingUser._id);
 
